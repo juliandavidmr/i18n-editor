@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import JSZip from 'jszip';
 
 export interface ICategory {
   [key: string]: {
@@ -70,6 +71,16 @@ export class RwService {
         list[lang.lang as string] = list[lang.lang] || { };
         list[lang.lang as string][key] = lang.text;
       });
+    });
+
+    const zip = new JSZip();
+    Object.keys(list).map(fileName => {
+      const content = JSON.stringify(list[fileName], null, 2);
+      zip.file(fileName, content);
+    });
+
+    zip.generateAsync({type: 'base64'}).then((base64) => {
+      location.href = 'data:application/zip;base64,' + base64;
     });
     console.log('Save:', list);
   }
