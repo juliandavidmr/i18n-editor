@@ -1,0 +1,28 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+</div>
+<h2>Here are some links to help you start: </h2>
+
+<router-outlet></router-outlet>
+
+<input type="file" (change)="readMultiFiles($event)" multiple />
+<button (click)="save()">Save all</button>
+
+<ng-container *ngIf="rw.hasFiles">
+  <div *ngFor="let c of (rw.categoryList | keyvalue); let i = index">
+    <fieldset>
+      <legend>#{{ i + 1 }}: {{ c.key }}</legend>
+      <div>
+        <ng-container *ngFor="let transl of c.value">
+          <label>
+            {{ transl.lang }}
+            <input [(ngModel)]="transl.text" />
+          </label>
+        </ng-container>
+      </div>
+    </fieldset>
+  </div>
+</ng-container>
