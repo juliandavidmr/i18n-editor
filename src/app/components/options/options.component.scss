@@ -1,0 +1,16 @@
+.options-component {
+  display: inline-block;
+  position: relative;
+
+  &_content_options {
+    position: absolute;
+    top: 15px;
+    background-color: white;
+    width: max-content;
+    min-width: 150px;
+    padding: 5px;
+    z-index: 1;
+    box-shadow: 1px 3px 5px 1px lightgrey;
+    border-radius: 4px;
+  }
+}

@@ -10,15 +10,16 @@
 
   <div *ngIf="rw.hasFiles" class="i18n-component_category_list">
     <div *ngFor="let c of (rw.categoryList | keyvalue); let i = index" class="i18n-component_category_list__item">
-      <div class="i18n-component_card--title">#{{ i + 1 }}: {{ c.key }}</div>
-      <div class="i18n-component_card--content">
-        <ng-container *ngFor="let transl of c.value">
-          <label>
-            {{ transl.lang }}
-            <input [(ngModel)]="transl.text" />
-          </label>
-        </ng-container>
+      <div class="i18n-component_category_list__item--title">#{{ i + 1 }}: {{ c.key }}</div>
+      <span (click)="addKey()">+</span>
+      <div *ngFor="let transl of c.value">
+        <label>
+          {{ transl.lang }}
+          <input [(ngModel)]="transl.text" />
+          <!-- <app-options [list]="[{ display: 'Inner', value: 1 }, { display: 'Copy as Angular i18n', value: 2 }]"></app-options> -->
+        </label>
       </div>
     </div>
   </div>
+  <template ></template>
 </div>

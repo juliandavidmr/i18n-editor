@@ -22,4 +22,9 @@ export class AppComponent {
   save() {
      this.rw.exportCategories();
   }
+
+  addKey() {
+    const newKeyName = prompt('Test');
+    console.log('ADD', newKeyName);
+  }
 }

@@ -1,0 +1,8 @@
+<div class="options-component" (click)="open = !open">
+  <div [innerHTML]="open ? '▲' : '▼'"></div>
+  <div *ngIf="open" class="options-component_content_options">
+    <div *ngFor="let item of list" (click)="handleSelect(item)">
+      {{ item.display }}
+    </div>
+  </div>
+</div>
