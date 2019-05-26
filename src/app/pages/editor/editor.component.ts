@@ -13,6 +13,7 @@ export class EditorComponent {
   states: {
     inner: boolean
   }[] = [];
+  modelNewLanguage = '';
 
   constructor(public rw: RwService, public dialog: MatDialog) { }
 
@@ -21,6 +22,11 @@ export class EditorComponent {
       Array.from({ length: count }, () => this.states.push({ inner: false }));
       console.log(this.states);
     });
+  }
+
+  addLanguage(allKeys: boolean, resourceKey: string) {
+    this.rw.addLanguage(allKeys, resourceKey, this.modelNewLanguage);
+    this.modelNewLanguage = '';
   }
 
   save() {

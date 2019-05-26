@@ -36,6 +36,14 @@
             </mat-nav-list>
           </div>
           <mat-action-row *ngIf="states.length > 0">
+            <ng-container>
+              <mat-form-field matLine>
+                <input matInput [placeholder]="'Enter the filename for the new language'"
+                  [(ngModel)]="modelNewLanguage" />
+              </mat-form-field>
+              <button mat-button (click)="addLanguage(false, c.key)">Add only to this resource</button>
+              <button mat-button (click)="addLanguage(true, c.key)">Add to all resources</button>
+            </ng-container>
             <div>
               <button mat-button [matMenuTriggerFor]="animals">Options</button>
               <mat-menu #animals="matMenu">
@@ -43,7 +51,10 @@
                 <button mat-menu-item [matMenuTriggerFor]="format">Format</button>
               </mat-menu>
               <mat-menu #render="matMenu">
-                <button mat-menu-item><mat-checkbox (change)="onChangeInner($event, i)" title="Render HTML content in each translation">Inner HTML</mat-checkbox></button>
+                <button mat-menu-item>
+                  <mat-checkbox (change)="onChangeInner($event, i)" title="Render HTML content in each translation">
+                    Inner HTML</mat-checkbox>
+                </button>
               </mat-menu>
               <mat-menu #format="matMenu">
                 <button mat-menu-item (click)="copyFormat('ngx-translate', c.key)">ngx-translate format</button>

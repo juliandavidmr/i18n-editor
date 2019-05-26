@@ -63,6 +63,17 @@ export class RwService {
     return Object.keys(list).length;
   }
 
+  addLanguage(allKeys: boolean, resourceKey: string, lang: string) {
+    if (allKeys) {
+      Object.keys(this.categoryList).map(rKey => this.addLanguage(false, rKey, lang));
+    } else {
+      this.categoryList[resourceKey].push({
+        lang,
+        text: ''
+      });
+    }
+  }
+
   exportCategories() {
     const list: { lang?: string, content?: { [key: string]: string } } = {};
     Object.keys(this.categoryList).map((key) => {
