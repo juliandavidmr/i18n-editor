@@ -1,0 +1,9 @@
+.layout-component {
+   
+    &_content {
+        margin: 0 auto;
+        width: 90%;
+        min-width: 600px;
+        max-width: 1600px;        
+    }
+}

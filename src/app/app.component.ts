@@ -9,22 +9,7 @@ import { RwService } from './services/rw/rw.service';
 export class AppComponent {
   title = 'i18n-editor';
 
-  constructor(public rw: RwService, private ref: ChangeDetectorRef) {
+  constructor() {
 
-  }
-
-  readMultiFiles(e) {
-    this.rw.readMultiFiles(e).then(() => {
-      this.ref.detectChanges();
-    });
-  }
-
-  save() {
-     this.rw.exportCategories();
-  }
-
-  addKey() {
-    const newKeyName = prompt('Test');
-    console.log('ADD', newKeyName);
   }
 }

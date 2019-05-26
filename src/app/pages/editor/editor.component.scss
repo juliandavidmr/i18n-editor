@@ -1,0 +1,12 @@
+.editor-component {
+  padding-bottom: 50px;
+
+  &_states {
+    &--inner {
+      background-color: #eee;
+      border-left: 4px solid #673ab7;
+      padding-left: 10px !important;
+      border-radius: 4px;
+    }
+  }
+}

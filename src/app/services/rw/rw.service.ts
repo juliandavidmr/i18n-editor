@@ -40,8 +40,7 @@ export class RwService {
             content: JSON.parse(reader.result as string)
           });
           if (this.fileList.length === files.length) {
-            this.categorize();
-            resolve();
+            resolve({ count: this.categorize() });
           }
         };
         reader.readAsText(file);
@@ -51,7 +50,7 @@ export class RwService {
 
   private categorize() {
     const list = [];
-    this.fileList.map((file) => {
+    for (const file of this.fileList) {
       Object.keys(file.content).map((key) => {
         list[key] = list[key] ? list[key] : [];
         list[key].push({
@@ -59,8 +58,9 @@ export class RwService {
           text: file.content[key]
         });
       });
-    });
+    }
     this.categoryList = list;
+    return Object.keys(list).length;
   }
 
   exportCategories() {

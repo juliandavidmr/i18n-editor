@@ -1,0 +1,8 @@
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
+  <p [innerHTML]="data.content"></p>
+</div>
+<div mat-dialog-actions>
+  <!-- <button mat-button (click)="onNoClick()">Copy</button> -->
+  <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+</div>
