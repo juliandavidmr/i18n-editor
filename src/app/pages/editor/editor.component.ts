@@ -14,6 +14,7 @@ export class EditorComponent {
     inner: boolean
   }[] = [];
   modelNewLanguage = '';
+  modelNewKey = '';
 
   constructor(public rw: RwService, public dialog: MatDialog) { }
 
@@ -33,9 +34,12 @@ export class EditorComponent {
     this.rw.exportCategories();
   }
 
-  addKey() {
-    const newKeyName = prompt('Test');
-    console.log('ADD', newKeyName);
+  addNewKey() {
+    if (this.modelNewKey) {
+      console.log(this.modelNewKey);
+      this.rw.addResourceKey(this.modelNewKey);
+      this.modelNewKey = '';
+    }
   }
 
   onChangeInner(event: MatCheckboxChange, index: number) {

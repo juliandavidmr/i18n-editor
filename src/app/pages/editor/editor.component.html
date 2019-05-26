@@ -6,12 +6,21 @@
     <button type="button" mat-raised-button (click)="imgFileInput.click()">Add a resources</button>
     <input hidden type="file" #imgFileInput (change)="readMultiFiles($event)" multiple />
     &nbsp;&nbsp;
-    <button (click)="save()" mat-raised-button [disabled]="!rw.hasFiles">Save all</button>
+    <button (click)="save()" mat-raised-button [disabled]="!rw.hasFiles">Download</button>
     <br><br>
     <mat-divider></mat-divider>
     <br>
 
     <div>
+      <div *ngIf="rw.hasFiles">
+        <mat-form-field>
+          <input matInput [placeholder]="'Add new translation key'" [(ngModel)]="modelNewKey" />
+        </mat-form-field>
+        <button mat-button (click)="addNewKey()">Add</button>
+      </div>
+
+      <br>
+
       <mat-accordion *ngFor="let c of (rw.categoryList | keyvalue); let i = index">
         <mat-expansion-panel>
           <mat-expansion-panel-header>
@@ -38,8 +47,7 @@
           <mat-action-row *ngIf="states.length > 0">
             <ng-container>
               <mat-form-field matLine>
-                <input matInput [placeholder]="'Enter the filename for the new language'"
-                  [(ngModel)]="modelNewLanguage" />
+                <input matInput [placeholder]="'Enter the filename for the new language'" [(ngModel)]="modelNewLanguage" />
               </mat-form-field>
               <button mat-button (click)="addLanguage(false, c.key)">Add only to this resource</button>
               <button mat-button (click)="addLanguage(true, c.key)">Add to all resources</button>
@@ -49,6 +57,7 @@
               <mat-menu #animals="matMenu">
                 <button mat-menu-item [matMenuTriggerFor]="render">Render</button>
                 <button mat-menu-item [matMenuTriggerFor]="format">Format</button>
+                <button mat-menu-item (click)="rw.removeResourceKey(c.key)">Remove this key</button>
               </mat-menu>
               <mat-menu #render="matMenu">
                 <button mat-menu-item>

@@ -74,6 +74,20 @@ export class RwService {
     }
   }
 
+  addResourceKey(key: string) {
+    this.categoryList[key] = [];
+    this.fileList.map(f => {
+      this.categoryList[key].push({
+        lang: f.name,
+        text: ''
+      });
+    });
+  }
+
+  removeResourceKey(key: string) {
+    delete this.categoryList[key];
+  }
+
   exportCategories() {
     const list: { lang?: string, content?: { [key: string]: string } } = {};
     Object.keys(this.categoryList).map((key) => {
