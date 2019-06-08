@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RwService } from 'src/app/services/rw/rw.service';
+import { RwService, ICategory } from 'src/app/services/rw/rw.service';
 import { MatCheckboxChange, MatDialog } from '@angular/material';
 import { DialogOverviewComponent } from 'src/app/components/dialog-overview/dialog-overview.component';
 
@@ -66,5 +66,14 @@ export class EditorComponent {
     dialogRef.afterClosed().subscribe(result => {
       console.log('The dialog was closed', result);
     });
+  }
+
+  // Treat the instructor name as the unique identifier for the object
+  trackCategoryByKey(index: number, category: any) {
+    return category.key;
+  }
+
+  trackResourceByKey(index: number, transl: any) {
+    return transl.lang;
   }
 }

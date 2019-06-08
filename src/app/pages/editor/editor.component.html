@@ -21,7 +21,7 @@
 
       <br>
 
-      <mat-accordion *ngFor="let c of (rw.categoryList | keyvalue); let i = index">
+      <mat-accordion *ngFor="let c of (rw.categoryList | keyvalue); trackBy: trackCategoryByKey; let i = index;">
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -33,7 +33,7 @@
           </mat-expansion-panel-header>
           <div>
             <mat-nav-list>
-              <mat-list-item *ngFor="let transl of c.value">
+              <mat-list-item *ngFor="let transl of c.value; trackBy: trackResourceByKey">
                 <mat-form-field matLine>
                   <input matInput [placeholder]="transl.lang" [(ngModel)]="transl.text" />
                 </mat-form-field>
