@@ -11,4 +11,12 @@ export class WelcomeComponent implements OnInit {
 
   ngOnInit() {
   }
+
+  loadFolder() {
+    alert("click on load");
+  }
+
+  createNew() {
+    alert("click on create");
+  }
 }
