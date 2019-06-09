@@ -2,14 +2,17 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CdkTreeModule } from '@angular/cdk/tree';
 
 import {
   MatButtonModule,
   MatCheckboxModule,
   MatExpansionModule,
+  MatTableModule,
   MatListModule,
   MatFormFieldModule,
   MatInputModule,
+  MatCardModule,
   MatToolbarModule,
   MatIconModule,
   MatSidenavModule,
@@ -44,14 +47,17 @@ import { DialogOverviewComponent } from './components/dialog-overview/dialog-ove
     MatButtonModule,
     MatCheckboxModule,
     MatExpansionModule,
+    MatTableModule,
+    MatListModule,
     MatFormFieldModule,
     MatInputModule,
     MatToolbarModule,
     MatIconModule,
     MatSidenavModule,
     MatMenuModule,
+    MatDialogModule,
     MatListModule,
-    MatDialogModule
+    CdkTreeModule
   ],
   entryComponents: [DialogOverviewComponent],
   providers: [RwService],
