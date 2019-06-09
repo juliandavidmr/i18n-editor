@@ -6,7 +6,7 @@ import { EditorComponent } from './pages/editor/editor.component';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/welcome',
+    redirectTo: 'welcome',
     pathMatch: 'full'
   },
   {
@@ -20,7 +20,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
