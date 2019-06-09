@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import JSZip from 'jszip';
 
 export interface ICategory {
-  [key: string]: {
-    lang: string, text: string
-  };
+  keyName: string;
+  languages: {
+    lang: string,
+    text: string
+  }[];
 }
 
 @Injectable({
@@ -49,18 +51,27 @@ export class RwService {
   }
 
   private categorize() {
-    const list = [];
     for (const file of this.fileList) {
       Object.keys(file.content).map((key) => {
-        list[key] = list[key] ? list[key] : [];
-        list[key].push({
+        let category = this.categoryList.find(c => c.keyName === key);
+
+        if (!category) {
+          this.categoryList.push({
+            keyName: key,
+            languages: []
+          });
+
+          category = this.categoryList.find(c => c.keyName === key);
+        }
+
+        category.languages.push({
           lang: file.name,
           text: file.content[key]
         });
       });
     }
-    this.categoryList = list;
-    return Object.keys(list).length;
+    console.log('Cat', this.categoryList)
+    return Object.keys(this.categoryList).length;
   }
 
   addLanguage(allKeys: boolean, resourceKey: string, lang: string) {
@@ -75,26 +86,33 @@ export class RwService {
   }
 
   addResourceKey(key: string) {
-    this.categoryList[key] = [];
+    const category: ICategory = {
+      keyName: key,
+      languages: []
+    };
+
     this.fileList.map(f => {
-      this.categoryList[key].push({
+      category.languages.push({
         lang: f.name,
         text: ''
       });
     });
+
+    return this.categoryList.unshift(category) - 1;
   }
 
   removeResourceKey(key: string) {
-    delete this.categoryList[key];
+    this.categoryList = this.categoryList.filter(c => c.keyName !== key);
   }
 
   exportCategories() {
     const list: { lang?: string, content?: { [key: string]: string } } = {};
-    Object.keys(this.categoryList).map((key) => {
-      const files: any = this.categoryList[key];
-      files.map((lang) => {
-        list[lang.lang as string] = list[lang.lang] || { };
-        list[lang.lang as string][key] = lang.text;
+
+    this.categoryList.map((key) => {
+      const languages: any = key.languages;
+      languages.map(l => {
+        list[l.lang] = list[l.lang] || { };
+        list[l.lang][key.keyName] = l.text;
       });
     });
 

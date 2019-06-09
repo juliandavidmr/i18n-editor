@@ -1,5 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { RwService } from './services/rw/rw.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -8,8 +7,4 @@ import { RwService } from './services/rw/rw.service';
 })
 export class AppComponent {
   title = 'i18n-editor';
-
-  constructor() {
-
-  }
 }

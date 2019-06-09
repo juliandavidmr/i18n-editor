@@ -37,8 +37,9 @@ export class EditorComponent {
   addNewKey() {
     if (this.modelNewKey) {
       console.log(this.modelNewKey);
-      this.rw.addResourceKey(this.modelNewKey);
+      const index = this.rw.addResourceKey(this.modelNewKey);
       this.modelNewKey = '';
+      this.states[index] = {inner: false};
     }
   }
 
@@ -69,8 +70,8 @@ export class EditorComponent {
   }
 
   // Treat the instructor name as the unique identifier for the object
-  trackCategoryByKey(index: number, category: any) {
-    return category.key;
+  trackCategoryByKey(index: number, category: ICategory) {
+    return category.keyName;
   }
 
   trackResourceByKey(index: number, transl: any) {

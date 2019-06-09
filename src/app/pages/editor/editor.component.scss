@@ -1,6 +1,53 @@
 .editor-component {
   padding-bottom: 50px;
 
+  &_header {
+
+  }
+
+  &_info {
+    position: fixed;
+    right: 3rem;
+    top: 4rem;
+    color: #9e9e9e8c;
+    text-align: right;
+
+    &__item {
+      display: block;
+    }
+  }
+
+  &_input {
+    display: block;
+    border-bottom: 1px solid #CCC;
+    padding: .5rem;
+
+    label {
+      display: block;
+      font-size: small;
+      margin-left: 7px;
+      margin-bottom: 3px;
+    }
+
+    input {
+      display: block;
+      width: 96%;
+      margin: 0 auto;
+      border-radius: 3px;
+      outline: none;
+      border: 1px solid #CCC;
+      padding: 5px 10px;
+    }
+
+    &:hover {
+      background-color: #fafafa;
+
+      label {
+        font-weight: 600;
+      }
+    }
+  }
+
   &_states {
     &--inner {
       background-color: #eee;
@@ -8,5 +55,12 @@
       padding-left: 10px !important;
       border-radius: 4px;
     }
+  }
+
+  &_footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0.6rem;
   }
 }
