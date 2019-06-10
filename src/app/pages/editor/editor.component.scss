@@ -1,6 +1,41 @@
 .editor-component {
-  padding-bottom: 50px;
+  // border: 1px solid black;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  overflow: hidden;
+
+  &_header {
+    border-bottom: 1px solid lightgray;
+    width: 100%;
+    height: auto;
+    padding-bottom: 7px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &__left {
+      width: 50%;
+    }
+    &__right {
+      width: 50%;
+      text-align: right;
+    }
+  }
+
+  &_body {
+    overflow-y: hidden;
+    overflow-x: auto;
+    width: 100%;
+    height: 100%;
+    padding-bottom: 7px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 
   &_header {
 
@@ -77,5 +112,86 @@
 
   .example-tree-node .example-tree-node {
     padding-left: 40px;
+  }
+}
+
+.tag {
+  border-radius: 10px;
+  font-size: 12pt;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0px 5px;
+  padding: 2px 8px;
+
+  &-primary {
+      background-color: #673ab7;
+      color: #FFF;
+  }
+
+  &-default {
+      background-color: #EBEBEB;
+  }
+}
+
+.btn {
+  border-radius: 5px;
+  font-size: 12pt;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0px 5px;
+
+  &-primary {
+      background-color: #673ab7;
+      color: #FFF;
+  }
+
+  &-default {
+      background-color: #EBEBEB;
+  }
+}
+
+.editor-container {
+  width: 100%;
+  height: 100%;
+}
+
+.editor-sidenav-content {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+
+  &_header {
+    width: 100%;
+  }
+
+  &_body {
+    width: 100%;
+  }
+}
+
+.editor-sidenav {
+  max-width: 30%;
+
+  &_header {
+    text-align: center;
+    border-bottom: 1px solid lightgrey;
+    background-color: #F5F5F5;
+  }
+
+  &_content {
+    
+  }
+}
+
+.mat-form-field-infix {
+  height: 30px;
+}
+
+.empty-content {
+  text-align: center;
+  width: 100%;
+
+  img {
+    width: 150px;
+    margin-right: auto;
+    margin-left: auto;
   }
 }
