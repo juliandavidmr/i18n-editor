@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { RwService, ICategory } from 'src/app/services/rw/rw.service';
 import { MatCheckboxChange, MatDialog } from '@angular/material';
 import { DialogOverviewComponent } from 'src/app/components/dialog-overview/dialog-overview.component';
@@ -15,13 +15,19 @@ export class EditorComponent {
   }[] = [];
   modelNewLanguage = '';
   modelNewKey = '';
+  resourcesGroup: any;
+  state: any;
+  loading: boolean = false;
 
-  constructor(public rw: RwService, public dialog: MatDialog) { }
+  constructor(public rw: RwService, public dialog: MatDialog, private cdRef: ChangeDetectorRef) { }
 
   readMultiFiles(e) {
+    this.loading = true;
+    this.cdRef.detectChanges();
     this.rw.readMultiFiles(e).then(({ count }) => {
       Array.from({ length: count }, () => this.states.push({ inner: false }));
-      console.log(this.states);
+      this.loading = false;
+      this.cdRef.detectChanges();
     });
   }
 
@@ -39,13 +45,12 @@ export class EditorComponent {
       console.log(this.modelNewKey);
       const index = this.rw.addResourceKey(this.modelNewKey);
       this.modelNewKey = '';
-      this.states[index] = {inner: false};
+      this.states[index] = { inner: false };
     }
   }
 
   onChangeInner(event: MatCheckboxChange, index: number) {
-    this.states[index].inner = event.checked;
-    console.log(index, event);
+    this.state.inner = event.checked;
   }
 
   copyFormat(format: 'ngx-translate', keyResource: string) {
@@ -76,5 +81,10 @@ export class EditorComponent {
 
   trackResourceByKey(index: number, transl: any) {
     return transl.lang;
+  }
+
+  viewResource(index) {
+    this.resourcesGroup = this.rw.categoryList[index];
+    this.state = this.states[index];
   }
 }
