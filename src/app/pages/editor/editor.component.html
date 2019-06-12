@@ -1,6 +1,7 @@
 <app-sidenav>
   <div class="editor-component">
 
+
     <div class="editor-component_header">
       <div class="editor-component_header__left">
         <button type="button" mat-raised-button (click)="imgFileInput.click()">Add a resources</button>
@@ -16,59 +17,69 @@
       </div>
     </div>
     <div class="editor-component_body">
-      <div class="empty-content" *ngIf="!rw.hasFiles">
+      <div class="empty-content" *ngIf="!rw.hasFiles && !loading">
         <img src="assets/img/empty-trash.png" />
-        <br/>
+        <br />
         <span>No resources have been added</span>
       </div>
+      <div class="loading-panel">
+        <div id="bowlG" *ngIf="loading">
+          <div id="bowl_ringG">
+            <div class="ball_holderG">
+              <div class="ballG">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <mat-drawer-container class="editor-container" *ngIf="rw.hasFiles" autosize>
-        <mat-drawer #drawer class="editor-sidenav" toggle mode="side">
-          <!-- <p><b>Resources list</b></p> -->
-          <div class="editor-sidenav_header" toggle>
+        <mat-drawer #drawer class="editor-sidenav" opened toggle mode="side">
+          <div class="editor-sidenav_header">
             <mat-form-field>
               <input matInput [placeholder]="'Add new key'" [(ngModel)]="modelNewKey" />
             </mat-form-field>
-            <!-- <mat-form-field appearance="outline">
-              <mat-label>Add new key</mat-label>
-              <input matInput placeholder="Placeholder">
-            </mat-form-field> -->
             &nbsp;<button mat-raised-button (click)="addNewKey()">Add</button>
           </div>
           <div class="editor-sidenav_content">
-            <mat-selection-list #resources>
-              <mat-list-option *ngFor="let c of rw.categoryList; trackBy: trackCategoryByKey; let i = index;">
-                {{ i + 1 }}. {{c.keyName}}
-              </mat-list-option>
-            </mat-selection-list>
+            <mat-nav-list *ngIf="!loading">
+              <mat-list-item *ngFor="let c of rw.categoryList; trackBy: trackCategoryByKey; let i = index;"
+                (click)="viewResource(i)">
+                <a matLine href="javascript:void(0);" title="{{ c.keyName }}">{{ i + 1 }}. {{ c.keyName }}</a>
+                <button mat-icon-button>
+                  <mat-icon><span class="tag tag-primary">{{ c.languages.length }}</span></mat-icon>
+                </button>
+              </mat-list-item>
+            </mat-nav-list>
           </div>
         </mat-drawer>
 
         <div class="editor-sidenav-content">
           <div class="editor-sidenav-content_header">
             <button type="button" mat-button (click)="drawer.toggle()">
-              Toggle sidenav
+              Toggle resources
             </button>
             <br />
           </div>
           <div class="editor-sidenav-content_body">
             <mat-accordion>
-              <ng-container *ngFor="let c of rw.categoryList; trackBy: trackCategoryByKey; let i = index;">
-                <mat-expansion-panel hideToggle="true">
+              <!-- <ng-container *ngFor="let c of rw.categoryList; trackBy: trackCategoryByKey; let i = index;"> -->
+              <ng-container *ngIf="resourcesGroup">
+                <mat-expansion-panel class="resource-panel" [expanded]="true">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      <span>#{{ i + 1 }}. {{ c.keyName }}</span>
+                      <span><b>{{ resourcesGroup.keyName }}</b></span>
                     </mat-panel-title>
-                    <mat-panel-description>
-                      <span>{{ c.languages.length }} elements</span>
+                    <mat-panel-description style="display: flex; justify-content: flex-end;">
+                      <span class="tag tag-default">{{ resourcesGroup.languages.length }} elements</span>
                     </mat-panel-description>
                   </mat-expansion-panel-header>
                   <ng-template matExpansionPanelContent>
-                    <ng-container *ngFor="let transl of c.languages; trackBy: trackResourceByKey">
+                    <ng-container *ngFor="let transl of resourcesGroup.languages; trackBy: trackResourceByKey">
                       <div class="editor-component_input">
                         <label>{{ transl.lang }}</label>
                         <input [placeholder]="transl.lang" [(ngModel)]="transl.text" />
                       </div>
-                      <div *ngIf="states[i].inner" class="editor-component_states--inner">
+                      <div *ngIf="state.inner" class="editor-component_states--inner">
                         <div [innerHTML]="transl.text"></div>
                       </div>
                     </ng-container>
@@ -78,14 +89,17 @@
                         <input matInput [placeholder]="'Enter filename for new language'"
                           [(ngModel)]="modelNewLanguage" />
                       </mat-form-field>
-                      <button mat-button (click)="addLanguage(false, c.keyName)">Add only to this resource</button>
-                      <button mat-button (click)="addLanguage(true, c.keyName)">Add to all resources</button>
+                      <button mat-button (click)="addLanguage(false, resourcesGroup.keyName)">Add only to this
+                        resource</button>
+                      <button mat-button (click)="addLanguage(true, resourcesGroup.keyName)">Add to all
+                        resources</button>
                       <div>
                         <button mat-button [matMenuTriggerFor]="animals">Options</button>
                         <mat-menu #animals="matMenu">
                           <button mat-menu-item [matMenuTriggerFor]="render">Render</button>
                           <button mat-menu-item [matMenuTriggerFor]="format">Format</button>
-                          <button mat-menu-item (click)="rw.removeResourceKey(c.keyName)">Remove this key</button>
+                          <button mat-menu-item (click)="rw.removeResourceKey(resourcesGroup.keyName)">Remove this
+                            key</button>
                         </mat-menu>
                         <mat-menu #render="matMenu">
                           <button mat-menu-item>
@@ -96,7 +110,8 @@
                           </button>
                         </mat-menu>
                         <mat-menu #format="matMenu">
-                          <button mat-menu-item (click)="copyFormat('ngx-translate', c.keyName)">ngx-translate
+                          <button mat-menu-item
+                            (click)="copyFormat('ngx-translate', resourcesGroup.keyName)">ngx-translate
                             format</button>
                         </mat-menu>
                       </div>
@@ -108,76 +123,6 @@
           </div>
         </div>
       </mat-drawer-container>
-      <!-- <div class="editor-component_body__sidemenu">
-        <div class="editor-component_body__sidemenu___header" *ngIf="rw.hasFiles">
-          <mat-form-field>
-            <input matInput [placeholder]="'Add new translation key'" [(ngModel)]="modelNewKey" />
-          </mat-form-field>
-          &nbsp;&nbsp;<button mat-raised-button (click)="addNewKey()">Add</button>
-        </div>
-        <div class="editor-component_body__sidemenu___content">
-          <mat-selection-list #resources>
-            <mat-list-option *ngFor="let c of rw.categoryList; trackBy: trackCategoryByKey; let i = index;">
-              {{ i + 1 }}. {{c.keyName}}
-            </mat-list-option>
-          </mat-selection-list>
-        </div>
-      </div>
-      <div class="editor-component_body__content">
-        <mat-accordion>
-          <ng-container *ngFor="let c of rw.categoryList; trackBy: trackCategoryByKey; let i = index;">
-            <mat-expansion-panel hideToggle="true">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <span>#{{ i + 1 }}. {{ c.keyName }}</span>
-                </mat-panel-title>
-                <mat-panel-description>
-                  <span>{{ c.languages.length }} elements</span>
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <ng-template matExpansionPanelContent>
-                <ng-container *ngFor="let transl of c.languages; trackBy: trackResourceByKey">
-                  <div class="editor-component_input">
-                    <label>{{ transl.lang }}</label>
-                    <input [placeholder]="transl.lang" [(ngModel)]="transl.text" />
-                  </div>
-                  <div *ngIf="states[i].inner" class="editor-component_states--inner">
-                    <div [innerHTML]="transl.text"></div>
-                  </div>
-                </ng-container>
-
-                <div *ngIf="states.length > 0" class="editor-component_footer">
-                  <mat-form-field matLine>
-                    <input matInput [placeholder]="'Enter filename for new language'" [(ngModel)]="modelNewLanguage" />
-                  </mat-form-field>
-                  <button mat-button (click)="addLanguage(false, c.keyName)">Add only to this resource</button>
-                  <button mat-button (click)="addLanguage(true, c.keyName)">Add to all resources</button>
-                  <div>
-                    <button mat-button [matMenuTriggerFor]="animals">Options</button>
-                    <mat-menu #animals="matMenu">
-                      <button mat-menu-item [matMenuTriggerFor]="render">Render</button>
-                      <button mat-menu-item [matMenuTriggerFor]="format">Format</button>
-                      <button mat-menu-item (click)="rw.removeResourceKey(c.keyName)">Remove this key</button>
-                    </mat-menu>
-                    <mat-menu #render="matMenu">
-                      <button mat-menu-item>
-                        <mat-checkbox (change)="onChangeInner($event, i)"
-                          title="Render HTML content in each translation">
-                          Render
-                        </mat-checkbox>
-                      </button>
-                    </mat-menu>
-                    <mat-menu #format="matMenu">
-                      <button mat-menu-item (click)="copyFormat('ngx-translate', c.keyName)">ngx-translate
-                        format</button>
-                    </mat-menu>
-                  </div>
-                </div>
-              </ng-template>
-            </mat-expansion-panel>
-          </ng-container>
-        </mat-accordion>
-      </div> -->
     </div>
   </div>
 </app-sidenav>

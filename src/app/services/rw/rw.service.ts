@@ -75,10 +75,13 @@ export class RwService {
   }
 
   addLanguage(allKeys: boolean, resourceKey: string, lang: string) {
+
     if (allKeys) {
-      Object.keys(this.categoryList).map(rKey => this.addLanguage(false, rKey, lang));
+      Object.keys(this.categoryList).map(rKey => {
+        this.addLanguage(false, this.categoryList[rKey].keyName, lang)
+      });
     } else {
-      this.categoryList[resourceKey].push({
+      this.categoryList.filter(f => f.keyName === resourceKey)[0].languages.push({
         lang,
         text: ''
       });
@@ -111,7 +114,7 @@ export class RwService {
     this.categoryList.map((key) => {
       const languages: any = key.languages;
       languages.map(l => {
-        list[l.lang] = list[l.lang] || { };
+        list[l.lang] = list[l.lang] || {};
         list[l.lang][key.keyName] = l.text;
       });
     });
@@ -122,7 +125,7 @@ export class RwService {
       zip.file(fileName, content);
     });
 
-    zip.generateAsync({type: 'base64'}).then((base64) => {
+    zip.generateAsync({ type: 'base64' }).then((base64) => {
       location.href = 'data:application/zip;base64,' + base64;
     });
     console.log('Save:', list);
