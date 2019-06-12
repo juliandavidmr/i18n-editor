@@ -1,6 +1,6 @@
 <app-sidenav>
   <div class="editor-component">
-    
+
 
     <div class="editor-component_header">
       <div class="editor-component_header__left">
@@ -22,7 +22,16 @@
         <br />
         <span>No resources have been added</span>
       </div>
-      <div class="loading-panel" *ngIf="loading"><img src="assets/img/loading.gif" alt="Loading..." /></div>
+      <div class="loading-panel">
+        <div id="bowlG" *ngIf="loading">
+          <div id="bowl_ringG">
+            <div class="ball_holderG">
+              <div class="ballG">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <mat-drawer-container class="editor-container" *ngIf="rw.hasFiles" autosize>
         <mat-drawer #drawer class="editor-sidenav" opened toggle mode="side">
           <div class="editor-sidenav_header">
