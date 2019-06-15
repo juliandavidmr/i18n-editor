@@ -17,11 +17,11 @@ export class EditorComponent {
   modelNewKey = '';
   resourcesGroup: any;
   state: any;
-  loading: boolean = false;
+  loading = false;
 
   constructor(public rw: RwService, public dialog: MatDialog, private cdRef: ChangeDetectorRef) { }
 
-  readMultiFiles(e) {
+  readMultiFiles(e: any) {
     this.loading = true;
     this.cdRef.detectChanges();
     this.rw.readMultiFiles(e).then(({ count }) => {
@@ -83,7 +83,7 @@ export class EditorComponent {
     return transl.lang;
   }
 
-  viewResource(index) {
+  viewResource(index: string | number) {
     this.resourcesGroup = this.rw.categoryList[index];
     this.state = this.states[index];
   }

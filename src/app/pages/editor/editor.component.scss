@@ -101,6 +101,20 @@
     padding-top: 0.6rem;
   }
 
+  &__focus_edit {
+    display: block;
+    width: 100%;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    font-weight: 700;
+
+    &:focus {
+      transition: all ease-in-out 200ms;
+      border-bottom: 1px solid #673ab7;
+    }
+  }
+
   .example-tree li {
     margin-top: 0;
     margin-bottom: 0;

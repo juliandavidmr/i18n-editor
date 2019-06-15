@@ -64,10 +64,10 @@
             <mat-accordion>
               <!-- <ng-container *ngFor="let c of rw.categoryList; trackBy: trackCategoryByKey; let i = index;"> -->
               <ng-container *ngIf="resourcesGroup">
-                <mat-expansion-panel class="resource-panel" [expanded]="true">
+                <mat-expansion-panel class="resource-panel" [expanded]="true" [disabled]="true">
                   <mat-expansion-panel-header>
                     <mat-panel-title>
-                      <span><b>{{ resourcesGroup.keyName }}</b></span>
+                      <input type="text" [(ngModel)]="resourcesGroup.keyName" class="editor-component__focus_edit">
                     </mat-panel-title>
                     <mat-panel-description style="display: flex; justify-content: flex-end;">
                       <span class="tag tag-default">{{ resourcesGroup.languages.length }} elements</span>
