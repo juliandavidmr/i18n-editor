@@ -1,13 +1,20 @@
 import { Injectable } from '@angular/core';
 import JSZip from 'jszip';
 
+interface IChild {
+  keyName: string;
+  text?: string;
+  hasChildren: boolean;
+  children?: IChild[];
+}
+
 export interface ICategory {
   keyName: string;
-  languages: {
-    lang: string,
+  languages: Partial<{
+    lang: string
     text: string
-  }[];
-  children?: ICategory[];
+    children?: Partial<IChild>[]
+  }>[];
 }
 
 @Injectable({
@@ -59,8 +66,7 @@ export class RwService {
         if (!category) {
           category = {
             keyName: key,
-            languages: [],
-            children: []
+            languages: []
           };
 
           this.categoryList.push(category);
@@ -73,12 +79,35 @@ export class RwService {
             text: file.content[key]
           });
         } else if (typeof text === 'object') {
-          //
+          category.languages.push({
+            lang: file.name,
+            children: this.getChilds(text)
+          });
         }
       });
     }
     console.log('Categories:', this.categoryList);
     return this.categoryList.length;
+  }
+
+  getChilds(text: {[key: string]: string}) {
+    const children: IChild[] = [];
+    Object.keys(text).map(k => {
+      if (typeof text[k] === 'string') {
+        children.push({
+          keyName: k,
+          hasChildren: false,
+          text: text[k]
+        });
+      } else {
+        children.push({
+          keyName: k,
+          hasChildren: true,
+          children: this.getChilds(text[k] as any)
+        });
+      }
+    });
+    return children;
   }
 
   addLanguage(allKeys: boolean, resourceKey: string, lang: string) {
