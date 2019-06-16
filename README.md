@@ -1,6 +1,19 @@
-#[Open I18nEditor](https://juliandavidmr.github.io/i18n-editor/dist/)
+# Translation editor
 
-[i18n-editor](https://juliandavidmr.github.io/i18n-editor/dist/) supports files in JSON format with the following structure:
+[Translation editor](https://juliandavidmr.github.io/i18n-editor/dist/) for (web) apps. Edit your json properties translation files with ease.
+
+## Features
+
+- [x] Add translations to multiple languages.
+- [x] Support multiple language files in parallel.
+- [x] Live HTML rendering.
+- [x] Export resource to [ngx-translate](https://github.com/ngx-translate/core) format.
+- [x] Delete translation resources.
+- [ ] Support for nested keys.
+- [ ] Differentiator of incomplete location resources.
+- [ ] Parameter extractor _(Angular, ie: {{ idParam }} => parameter = idParam)_.
+
+## JSON examples
 
 **en.json**:
 
@@ -31,5 +44,3 @@
   "register_terms_use_required": "契約条件を選択してください"
 }
 ```
-
-_and many more files ..._

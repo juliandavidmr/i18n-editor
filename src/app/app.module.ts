@@ -28,6 +28,7 @@ import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { EditorComponent } from './pages/editor/editor.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { DialogOverviewComponent } from './components/dialog-overview/dialog-overview.component';
+import { ConfigService } from './services/config/config.service';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,7 @@ import { DialogOverviewComponent } from './components/dialog-overview/dialog-ove
     CdkTreeModule
   ],
   entryComponents: [DialogOverviewComponent],
-  providers: [RwService],
+  providers: [RwService, ConfigService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
