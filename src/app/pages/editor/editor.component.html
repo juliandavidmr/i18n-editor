@@ -79,9 +79,18 @@
                         <label>{{ transl.lang }}</label>
                         <input [placeholder]="transl.lang" [(ngModel)]="transl.text" />
                       </div>
+
                       <div *ngIf="state.inner" class="editor-component_states--inner">
                         <div [innerHTML]="transl.text"></div>
                       </div>
+
+                      <fieldset *ngIf="transl.children">
+                        <legend>Nested child</legend>
+                        <fieldset *ngFor="let child of transl.children" class="editor-component_input">
+                          <legend>{{ child.keyName }}</legend>
+                          <input [(ngModel)]="child.text">
+                        </fieldset>
+                      </fieldset>
                     </ng-container>
 
                     <div *ngIf="states.length > 0" class="editor-component_footer">
@@ -89,17 +98,20 @@
                         <input matInput [placeholder]="'Enter filename for new language'"
                           [(ngModel)]="modelNewLanguage" />
                       </mat-form-field>
-                      <button mat-button (click)="addLanguage(false, resourcesGroup.keyName)">Add only to this
-                        resource</button>
-                      <button mat-button (click)="addLanguage(true, resourcesGroup.keyName)">Add to all
-                        resources</button>
+                      <button mat-button (click)="addLanguage(false, resourcesGroup.keyName)">
+                        Add only to this resource
+                      </button>
+                      <button mat-button (click)="addLanguage(true, resourcesGroup.keyName)">
+                        Add to all resources
+                      </button>
                       <div>
                         <button mat-button [matMenuTriggerFor]="animals">Options</button>
                         <mat-menu #animals="matMenu">
                           <button mat-menu-item [matMenuTriggerFor]="render">Render</button>
                           <button mat-menu-item [matMenuTriggerFor]="format">Format</button>
-                          <button mat-menu-item (click)="rw.removeResourceKey(resourcesGroup.keyName)">Remove this
-                            key</button>
+                          <button mat-menu-item (click)="rw.removeResourceKey(resourcesGroup.keyName)">
+                            Remove this key
+                          </button>
                         </mat-menu>
                         <mat-menu #render="matMenu">
                           <button mat-menu-item>

@@ -17,7 +17,8 @@ import {
   MatIconModule,
   MatSidenavModule,
   MatMenuModule,
-  MatDialogModule
+  MatDialogModule,
+  MatTreeModule
 } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -58,7 +59,7 @@ import { ConfigService } from './services/config/config.service';
     MatMenuModule,
     MatDialogModule,
     MatListModule,
-    CdkTreeModule
+    MatTreeModule
   ],
   entryComponents: [DialogOverviewComponent],
   providers: [RwService, ConfigService],
