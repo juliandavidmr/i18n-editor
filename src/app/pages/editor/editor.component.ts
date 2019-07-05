@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef } from '@angular/core';
 import { RwService, ICategory } from 'src/app/services/rw/rw.service';
 import { MatCheckboxChange, MatDialog } from '@angular/material';
 import { DialogOverviewComponent } from 'src/app/components/dialog-overview/dialog-overview.component';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-editor',
@@ -18,6 +19,7 @@ export class EditorComponent {
   resourcesGroup: any;
   state: any;
   loading: boolean = false;
+  jsonResult: any = {};
 
   constructor(public rw: RwService, public dialog: MatDialog, private cdRef: ChangeDetectorRef) { }
 
@@ -29,6 +31,53 @@ export class EditorComponent {
       this.loading = false;
       this.cdRef.detectChanges();
     });
+  }
+
+  readExcelFile(e) {
+    this.loading = true;
+    this.cdRef.detectChanges();
+    this.rw.readExcelFile(e).then(({ workbook }) => {
+      var first_sheet_name = workbook.SheetNames[0];
+      var languages = ["en", "es", "de", "fr", "ja", "it"];
+      var result: any[] = []
+      /* Get worksheet */
+      var worksheet = workbook.Sheets[first_sheet_name];
+      let rows: any[] = XLSX.utils.sheet_to_json(worksheet, {
+        raw: true
+      });
+      languages.forEach(lang => {
+        let data = { lang: lang, resources: [] }
+        rows.forEach(row => {
+          let key = row.KEY || row.key;
+          let value = this.getLangValue(row, lang)
+          data.resources.push(`${key} : ${value || ''};`)
+          // data.resources.push(`${key} : ${value || ''};`)
+        })
+        result.push(data)
+      })
+      this.jsonResult = "<pre>"+JSON.stringify(result,undefined, 2) +"</pre>"
+      this.openDialog("Result", this.jsonResult, 700)
+
+      this.loading = false;
+      this.cdRef.detectChanges();
+    });
+  }
+
+  getLangValue(row: any, lang: string) {
+    switch (lang) {
+      case "en":
+        return row.EN || row.en;
+      case "es":
+        return row.ES || row.es;
+      case "de":
+        return row.DE || row.de;
+      case "fr":
+        return row.FR || row.fr;
+      case "ja":
+        return row.JA || row.ja;
+      case "it":
+        return row.IT || row.it;
+    }
   }
 
   addLanguage(allKeys: boolean, resourceKey: string) {
@@ -63,9 +112,9 @@ export class EditorComponent {
     }
   }
 
-  openDialog(title: string, content: string): void {
+  openDialog(title: string, content: string, width: number = 430): void {
     const dialogRef = this.dialog.open(DialogOverviewComponent, {
-      width: '430px',
+      width: `${width}px`,
       data: { title, content }
     });
 

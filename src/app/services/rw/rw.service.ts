@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import JSZip from 'jszip';
+import * as XLSX from 'xlsx';
 
 export interface ICategory {
   keyName: string;
@@ -8,6 +9,9 @@ export interface ICategory {
     text: string
   }[];
 }
+
+const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+const EXCEL_EXTENSION = '.xlsx';
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +50,34 @@ export class RwService {
           }
         };
         reader.readAsText(file);
+      });
+    }));
+  }
+
+  readExcelFile(e: any) {
+    return new Promise(((resolve, reject) => {
+      this.fileList = [];
+      const files = e.currentTarget.files as File[];
+      Object.keys(files).forEach(i => {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          var filename = file.name;
+          // pre-process data
+          var binary = "";
+          var target: any = e.target;
+          var bytes = new Uint8Array(target.result);
+          var length = bytes.byteLength;
+          for (var i = 0; i < length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+          }
+          // call 'xlsx' to read the file
+          var oFile = XLSX.read(binary, {type: 'binary', cellDates:true, cellStyles:true});
+          if (oFile) {
+            resolve({ workbook: oFile });
+          }
+        };
+        reader.readAsArrayBuffer(file);
       });
     }));
   }
