@@ -84,7 +84,7 @@ export class RwService {
             binary += String.fromCharCode(bytes[i]);
           }
           // call 'xlsx' to read the file
-          var oFile = XLSX.export().read(binary, { type: 'binary', cellDates: true, cellStyles: true });
+          var oFile = XLSX.read(binary, { type: 'binary', cellDates: true, cellStyles: true });
           if (oFile) {
             resolve({ workbook: oFile });
           }
