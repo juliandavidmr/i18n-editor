@@ -14,19 +14,26 @@ export class EditorComponent {
   states: {
     inner: boolean
   }[] = [];
-  modelNewLanguage = '';
+  modelNewLanguage = '.json';
   modelNewKey = '';
   resourcesGroup: any;
   state: any;
   loading: boolean = false;
   jsonResult: any = {};
+  filter: string;
+  totalResources: any[] = [];
+  missingResources: any[] = [];
+  renderChecked: boolean = false;
+  isMissingActivated: boolean = false;
 
   constructor(public rw: RwService, public dialog: MatDialog, private cdRef: ChangeDetectorRef) { }
 
-  readMultiFiles(e) {
+  readMultiFiles(e: any) {
     this.loading = true;
     this.cdRef.detectChanges();
     this.rw.readMultiFiles(e).then(({ count }) => {
+      this.totalResources = this.rw.categoryList;
+      this.missingResources = this.rw.categoryList.filter(res => res.languages.length != this.rw.fileList.length)
       Array.from({ length: count }, () => this.states.push({ inner: false }));
       this.loading = false;
       this.cdRef.detectChanges();
@@ -38,7 +45,7 @@ export class EditorComponent {
     this.cdRef.detectChanges();
     this.rw.readExcelFile(e).then(({ workbook }) => {
       var first_sheet_name = workbook.SheetNames[0];
-      var languages = ["en", "es", "de", "fr", "ja", "it"];
+      var languages = ["en", "es", "de", "fr", "it", "ja", "nl", "pt", "ru", "zh-cn"];
       var result: any[] = []
       /* Get worksheet */
       var worksheet = workbook.Sheets[first_sheet_name];
@@ -55,8 +62,8 @@ export class EditorComponent {
         })
         result.push(data)
       })
-      this.jsonResult = "<pre>"+JSON.stringify(result,undefined, 2) +"</pre>"
-      this.openDialog("Result", this.jsonResult, 700)
+      this.jsonResult = "<pre>" + JSON.stringify(result, undefined, 2) + "</pre>"
+      this.openDialog("Result", this.jsonResult, 900)
 
       this.loading = false;
       this.cdRef.detectChanges();
@@ -73,16 +80,37 @@ export class EditorComponent {
         return row.DE || row.de;
       case "fr":
         return row.FR || row.fr;
-      case "ja":
-        return row.JA || row.ja;
       case "it":
         return row.IT || row.it;
+      case "ja":
+        return row.JA || row.ja;
+      case "nl":
+        return row.NL || row.nl;
+      case "pt":
+        return row.PT || row.pt;
+      case "ru":
+        return row.RU || row.ru;
+      case "zh-cn":
+        return row.ZH_CN || row.zh_cn;
+    }
+  }
+
+  filterResources(event) {
+    if (event != '') {
+      this.totalResources =
+        this.isMissingActivated ?
+          this.missingResources.filter(res => res.keyName.toLowerCase().indexOf(event.toLowerCase()) > -1) :
+          this.rw.categoryList.filter(res => res.keyName.toLowerCase().indexOf(event.toLowerCase()) > -1);
+      if (this.resourcesGroup)
+        this.resourcesGroup = this.totalResources.filter(res => res.keyName.toLowerCase().indexOf(this.resourcesGroup.keyName.toLowerCase()) > -1).length > 0 ? this.resourcesGroup : null;
+    } else {
+      this.totalResources = this.isMissingActivated ? this.missingResources : this.rw.categoryList;
     }
   }
 
   addLanguage(allKeys: boolean, resourceKey: string) {
     this.rw.addLanguage(allKeys, resourceKey, this.modelNewLanguage);
-    this.modelNewLanguage = '';
+    this.modelNewLanguage = '.json';
   }
 
   save() {
@@ -99,7 +127,8 @@ export class EditorComponent {
   }
 
   onChangeInner(event: MatCheckboxChange, index: number) {
-    this.state.inner = event.checked;
+    this.renderChecked = event.checked;
+    this.state.inner = this.renderChecked;
   }
 
   copyFormat(format: 'ngx-translate', keyResource: string) {
@@ -119,7 +148,7 @@ export class EditorComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed', result);
+      //console.log('The dialog was closed', result);
     });
   }
 
@@ -132,8 +161,18 @@ export class EditorComponent {
     return transl.lang;
   }
 
-  viewResource(index) {
-    this.resourcesGroup = this.rw.categoryList[index];
+  viewResource(index: string | number) {
+    this.resourcesGroup = this.totalResources[index];
     this.state = this.states[index];
+  }
+
+  showMissingFiles() {
+    this.totalResources = this.missingResources.filter(res => res.languages.length != this.rw.fileList.length)
+    this.isMissingActivated = true;
+  }
+
+  showAllResources() {
+    this.totalResources = this.rw.categoryList;
+    this.isMissingActivated = false;
   }
 }

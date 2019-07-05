@@ -2,12 +2,20 @@ import { Injectable } from '@angular/core';
 import JSZip from 'jszip';
 import * as XLSX from 'xlsx';
 
+interface IChild {
+  keyName: string;
+  text?: string;
+  hasChildren: boolean;
+  children?: IChild[];
+}
+
 export interface ICategory {
   keyName: string;
-  languages: {
-    lang: string,
+  languages: Partial<{
+    lang: string
     text: string
-  }[];
+    children?: Partial<IChild>[]
+  }>[];
 }
 
 const EXCEL_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
@@ -32,7 +40,7 @@ export class RwService {
   }
 
   readMultiFiles(e: any) {
-    return new Promise(((resolve, reject) => {
+    return new Promise((resolve => {
       this.fileList = [];
       const files = e.currentTarget.files as File[];
       Object.keys(files).forEach(i => {
@@ -84,33 +92,60 @@ export class RwService {
 
   private categorize() {
     for (const file of this.fileList) {
-      Object.keys(file.content).map((key) => {
+      Object.keys(file.content).map(key => {
         let category = this.categoryList.find(c => c.keyName === key);
 
         if (!category) {
-          this.categoryList.push({
+          category = {
             keyName: key,
             languages: []
-          });
+          };
 
-          category = this.categoryList.find(c => c.keyName === key);
+          this.categoryList.push(category);
         }
 
-        category.languages.push({
-          lang: file.name,
-          text: file.content[key]
-        });
+        const text = file.content[key];
+        if (typeof text === 'string') {
+          category.languages.push({
+            lang: file.name,
+            text: file.content[key]
+          });
+        } else if (typeof text === 'object') {
+          category.languages.push({
+            lang: file.name,
+            children: this.getChilds(text)
+          });
+        }
       });
     }
-    console.log('Cat', this.categoryList)
-    return Object.keys(this.categoryList).length;
+    //console.log('Categories:', this.categoryList);
+    return this.categoryList.length;
+  }
+
+  getChilds(text: {[key: string]: string}) {
+    const children: IChild[] = [];
+    Object.keys(text).map(k => {
+      if (typeof text[k] === 'string') {
+        children.push({
+          keyName: k,
+          hasChildren: false,
+          text: text[k]
+        });
+      } else {
+        children.push({
+          keyName: k,
+          hasChildren: true,
+          children: this.getChilds(text[k] as any)
+        });
+      }
+    });
+    return children;
   }
 
   addLanguage(allKeys: boolean, resourceKey: string, lang: string) {
-
     if (allKeys) {
       Object.keys(this.categoryList).map(rKey => {
-        this.addLanguage(false, this.categoryList[rKey].keyName, lang)
+        this.addLanguage(false, this.categoryList[rKey].keyName, lang);
       });
     } else {
       this.categoryList.filter(f => f.keyName === resourceKey)[0].languages.push({
@@ -145,7 +180,7 @@ export class RwService {
 
     this.categoryList.map((key) => {
       const languages: any = key.languages;
-      languages.map(l => {
+      languages.map((l: { lang: string | number; text: any; }) => {
         list[l.lang] = list[l.lang] || {};
         list[l.lang][key.keyName] = l.text;
       });
@@ -160,6 +195,6 @@ export class RwService {
     zip.generateAsync({ type: 'base64' }).then((base64) => {
       location.href = 'data:application/zip;base64,' + base64;
     });
-    console.log('Save:', list);
+    //console.log('Save:', list);
   }
 }

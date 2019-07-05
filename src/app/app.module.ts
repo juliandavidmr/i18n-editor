@@ -17,7 +17,8 @@ import {
   MatIconModule,
   MatSidenavModule,
   MatMenuModule,
-  MatDialogModule
+  MatDialogModule,
+  MatTreeModule
 } from '@angular/material';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,6 +29,7 @@ import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { EditorComponent } from './pages/editor/editor.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { DialogOverviewComponent } from './components/dialog-overview/dialog-overview.component';
+import { ConfigService } from './services/config/config.service';
 
 @NgModule({
   declarations: [
@@ -57,10 +59,10 @@ import { DialogOverviewComponent } from './components/dialog-overview/dialog-ove
     MatMenuModule,
     MatDialogModule,
     MatListModule,
-    CdkTreeModule
+    MatTreeModule
   ],
   entryComponents: [DialogOverviewComponent],
-  providers: [RwService],
+  providers: [RwService, ConfigService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
