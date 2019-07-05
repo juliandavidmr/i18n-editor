@@ -1,3 +1,14 @@
 p {
   overflow-wrap: break-word;
 }
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    &-title {
+
+    }
+    &-close {
+
+    }
+}

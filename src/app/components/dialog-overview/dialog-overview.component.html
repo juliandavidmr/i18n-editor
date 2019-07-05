@@ -1,6 +1,20 @@
-<h1 mat-dialog-title>{{data.title}}</h1>
+<div class="dialog-header">
+  <div>
+    <h1 mat-dialog-title>{{data.title}}</h1>
+  </div>
+  <div>
+    <button mat-button *ngIf="showSource" (click)="copyContent()">Copy</button>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Close</button>
+  </div>
+</div>
+
 <div mat-dialog-content>
-  <p [innerHTML]="data.content"></p>
+  <div *ngIf="data.showCheckboxes">
+    <mat-checkbox [checked]="showHtmlRendered" (change)="viewRendered()">HTML Rendered</mat-checkbox>&nbsp;&nbsp;&nbsp;&nbsp;
+    <mat-checkbox [checked]="showSource" (change)="viewSource()">Source content</mat-checkbox>
+  </div>
+  <p *ngIf="showHtmlRendered" [innerHTML]="data.content"></p>
+  <textarea *ngIf="showSource" id="contentResult" name="textarea" rows="50" cols="200">{{data.content}}</textarea>
 </div>
 <div mat-dialog-actions>
   <!-- <button mat-button (click)="onNoClick()">Copy</button> -->

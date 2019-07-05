@@ -57,13 +57,13 @@ export class EditorComponent {
         rows.forEach(row => {
           let key = row.KEY || row.key;
           let value = this.getLangValue(row, lang)
-          data.resources.push(`${key} : ${value || ''};`)
+          data.resources.push(`${key} : ${value || ''}`)
           // data.resources.push(`${key} : ${value || ''};`)
         })
         result.push(data)
       })
-      this.jsonResult = "<pre>" + JSON.stringify(result, undefined, 2) + "</pre>"
-      this.openDialog("Result", this.jsonResult, 900)
+      this.jsonResult = '<pre>' + JSON.stringify(result, undefined, 2) + '</pre>'
+      this.openDialog("Result", this.jsonResult, 900, true, true)
 
       this.loading = false;
       this.cdRef.detectChanges();
@@ -119,10 +119,23 @@ export class EditorComponent {
 
   addNewKey() {
     if (this.modelNewKey) {
-      console.log(this.modelNewKey);
       const index = this.rw.addResourceKey(this.modelNewKey);
       this.modelNewKey = '';
       this.states[index] = { inner: false };
+      this.refreshResources();
+    }
+  }
+
+  removeResourceKey(keyName){
+    this.rw.removeResourceKey(keyName);
+    this.refreshResources();
+  }
+
+  refreshResources() {
+    if (this.isMissingActivated) {
+      this.missingResources = this.rw.categoryList.filter(res => res.languages.length != this.rw.fileList.length)
+    } else {
+      this.totalResources = this.rw.categoryList;
     }
   }
 
@@ -141,10 +154,10 @@ export class EditorComponent {
     }
   }
 
-  openDialog(title: string, content: string, width: number = 430): void {
+  openDialog(title: string, content: string, width: number = 430, isField: boolean = false, showCheckboxes: boolean = false): void {
     const dialogRef = this.dialog.open(DialogOverviewComponent, {
       width: `${width}px`,
-      data: { title, content }
+      data: { title, content, isField, showCheckboxes }
     });
 
     dialogRef.afterClosed().subscribe(result => {

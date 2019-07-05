@@ -62,6 +62,10 @@ export class RwService {
     }));
   }
 
+  clean() {
+
+  }
+
   readExcelFile(e: any) {
     return new Promise(((resolve, reject) => {
       this.fileList = [];
@@ -80,7 +84,7 @@ export class RwService {
             binary += String.fromCharCode(bytes[i]);
           }
           // call 'xlsx' to read the file
-          var oFile = XLSX.read(binary, {type: 'binary', cellDates:true, cellStyles:true});
+          var oFile = XLSX.export().read(binary, { type: 'binary', cellDates: true, cellStyles: true });
           if (oFile) {
             resolve({ workbook: oFile });
           }
@@ -88,6 +92,24 @@ export class RwService {
         reader.readAsArrayBuffer(file);
       });
     }));
+  }
+
+  exportToExcel() {
+    var tabularData = [{
+      "sheetName": "Sheet1",
+      "data": [[{ "text": "Name" }, { "text": "Position" }, { "text": "Office" }, { "text": "Age" }, {
+        "text": "Start <a href='https://www.jqueryscript.net/time-clock/'>date</a>"
+      }, { "text": "Salary" }], [{ "text": "Tiger Nixon" }, { "text": "System Architect" }, { "text": "Edinburgh" }, { "text": 61 }, { "text": "2011/04/25" }, { "text": "$320,800" }], [{ "text": "Garrett Winters" }, { "text": "Accountant" }, { "text": "Tokyo" }, { "text": 63 }, { "text": "2011/07/25" }, { "text": "$170,750" }], [{ "text": "Ashton Cox" }, { "text": "Junior Technical Author" }, { "text": "San Francisco" }, { "text": 66 }, { "text": "2009/01/12" }, { "text": "$86,000" }], [{ "text": "Cedric Kelly" }, { "text": "Senior Javascript Developer" }, { "text": "Edinburgh" }, { "text": 22 }, { "text": "2012/03/29" }, { "text": "$433,060" }], [{ "text": "Airi Satou" }, { "text": "Accountant" }, { "text": "Tokyo" }, { "text": 33 }, { "text": "2008/11/28" }, { "text": "$162,700" }], [{ "text": "Brielle Williamson" }, { "text": "Integration Specialist" }, { "text": "New York" }, { "text": 61 }, { "text": "2012/12/02" }, { "text": "$372,000" }], [{ "text": "Herrod Chandler" }, { "text": "Sales Assistant" }, { "text": "San Francisco" }, { "text": 59 }, { "text": "2012/08/06" }, { "text": "$137,500" }], [{ "text": "Rhona Davidson" }, { "text": "Integration Specialist" }, { "text": "Tokyo" }, { "text": 55 }, { "text": "2010/10/14" }, { "text": "$327,900" }]]
+    }];
+    var options = {
+      fileName: "jhreport",
+      extension: ".xlsx",
+      sheetName: "Sheet",
+      fileFullName: "report.xlsx",
+      header: true,
+      maxCellWidth: 20
+    };
+    //XLSX.export(tabularData, options);
   }
 
   private categorize() {
@@ -122,7 +144,7 @@ export class RwService {
     return this.categoryList.length;
   }
 
-  getChilds(text: {[key: string]: string}) {
+  getChilds(text: { [key: string]: string }) {
     const children: IChild[] = [];
     Object.keys(text).map(k => {
       if (typeof text[k] === 'string') {
