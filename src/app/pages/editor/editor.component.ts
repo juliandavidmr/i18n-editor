@@ -53,13 +53,15 @@ export class EditorComponent {
         raw: true
       });
       languages.forEach(lang => {
-        let data = { lang: lang, resources: [] }
+        let jsonResources = {};
         rows.forEach(row => {
-          let key = row.KEY || row.key;
-          let value = this.getLangValue(row, lang)
-          data.resources.push(`${key} : ${value || ''}`)
-          // data.resources.push(`${key} : ${value || ''};`)
+          let key = this.getParameterCaseInsensitive(row, "key");
+          let value = this.getParameterCaseInsensitive(row, lang);
+          if (!(value) && lang === "zh-cn")
+            value = this.getParameterCaseInsensitive(row, "zh");
+          jsonResources[`${key}`] = `${value}`;
         })
+        let data = { lang: lang, resources: jsonResources }
         result.push(data)
       })
       this.jsonResult = '<pre>' + JSON.stringify(result, undefined, 2) + '</pre>'
@@ -91,8 +93,14 @@ export class EditorComponent {
       case "ru":
         return row.RU || row.ru;
       case "zh-cn":
-        return row.ZH_CN || row.zh_cn;
+        return row.ZH_CN || row.zh_cn || row.zh || row.ZH;
     }
+  }
+
+  getParameterCaseInsensitive(object, key) {
+    let value = object[Object.keys(object)
+      .find(k => k.toLowerCase() === key.toLowerCase())];
+    return value || '';
   }
 
   filterResources(event) {
@@ -126,7 +134,7 @@ export class EditorComponent {
     }
   }
 
-  removeResourceKey(keyName){
+  removeResourceKey(keyName) {
     this.rw.removeResourceKey(keyName);
     this.refreshResources();
   }
