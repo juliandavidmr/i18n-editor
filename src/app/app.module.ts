@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { CdkTreeModule } from '@angular/cdk/tree';
 
 import {
   MatButtonModule,
@@ -12,7 +11,6 @@ import {
   MatListModule,
   MatFormFieldModule,
   MatInputModule,
-  MatCardModule,
   MatToolbarModule,
   MatIconModule,
   MatSidenavModule,
@@ -26,7 +24,6 @@ import { AppComponent } from './app.component';
 import { RwService } from './services/rw/rw.service';
 import { OptionsComponent } from './components/options/options.component';
 import { LayoutComponent } from './pages/layout/layout.component';
-import { WelcomeComponent } from './pages/welcome/welcome.component';
 import { EditorComponent } from './pages/editor/editor.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { DialogOverviewComponent } from './components/dialog-overview/dialog-overview.component';
@@ -37,7 +34,6 @@ import { ConfigService } from './services/config/config.service';
     AppComponent,
     OptionsComponent,
     LayoutComponent,
-    WelcomeComponent,
     EditorComponent,
     SidenavComponent,
     DialogOverviewComponent

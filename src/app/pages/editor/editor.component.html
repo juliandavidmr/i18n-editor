@@ -1,151 +1,250 @@
-<app-sidenav>
-  <div class="editor-component">
-    <div class="editor-component_header">
-      <div class="editor-component_header__left">
-        <button type="button" mat-raised-button (click)="imgFileInput.click()">Add resources</button>
-        <input hidden type="file" #imgFileInput (change)="readMultiFiles($event)" multiple />
-        &nbsp;
-        <button type="button" mat-raised-button (click)="excelFileInput.click()">Import Excel file</button>
-        <input hidden type="file" #excelFileInput (change)="readExcelFile($event)" />
-        &nbsp;
-        <button (click)="save()" mat-raised-button [disabled]="!rw.hasFiles">Download</button>
-      </div>
-      <div class="editor-component_header__right">
-        <div *ngIf="rw.hasFiles">
-          <span *ngIf="rw.fileList" class="tag tag-default">{{ rw.fileList.length }} files</span>
-          <span class="tag tag-default">{{ rw.categoryList.length }} resources</span>
-        </div>
-      </div>
+<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="https://bulma.io">
+      <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+    </a>
+
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="#">
+        i18n editor
+      </a>
+
+      <a type="button" (click)="imgFileInput.click()" class="navbar-item">
+        Add resources
+      </a>
+      <input hidden type="file" #imgFileInput (change)="readMultiFiles($event)" multiple />
+
+      <a type="button" (click)="excelFileInput.click()" class="navbar-item">
+        Import Excel file
+      </a>
+      <input hidden type="file" #excelFileInput (change)="readExcelFile($event)" />
     </div>
-    <div class="editor-component_body">
-      <div class="empty-content" *ngIf="!rw.hasFiles && !loading">
-        <img src="assets/img/empty-trash.png" />
-        <br />
-        <span>No resources have been added</span>
-      </div>
-      <div class="loading-panel">
-        <div id="bowlG" *ngIf="loading">
-          <div id="bowl_ringG">
-            <div class="ball_holderG">
-              <div class="ballG">
-              </div>
-            </div>
-          </div>
+
+    <div class="navbar-end">
+      <ng-container *ngIf="rw.hasFiles">
+        <div class="navbar-item">
+          <span class="tag is-primary is-normal">{{ rw.fileList.length }} files</span>
+          <span class="tag is-info is-normal">{{ rw.categoryList.length }} resources</span>
+        </div>
+      </ng-container>
+
+      <div *ngIf="rw.hasFiles" class="navbar-item">
+        <div class="field is-grouped">
+          <p class="control">
+            <a class="button is-primary" (click)="save()">
+              <span class="icon">
+                <i class="fas fa-download"></i>
+              </span>
+              <span>Download</span>
+            </a>
+          </p>
         </div>
       </div>
-      <mat-drawer-container class="editor-container" *ngIf="rw.hasFiles" autosize>
-        <mat-drawer #drawer class="editor-sidenav" opened toggle mode="side">
-          <div class="editor-sidenav_header">
-            <mat-form-field>
-              <input matInput [placeholder]="'Add new key'" [(ngModel)]="modelNewKey" />
-            </mat-form-field>
-            &nbsp;<button mat-raised-button (click)="addNewKey()">Add</button>
-          </div>
-          <div class="editor-sidenav_content">
-            <div class="editor-sidenav_header">
-              <mat-form-field class="example-full-width">
-                <input type="search" matInput [(ngModel)]="filter" (ngModelChange)="filterResources($event)"
-                  placeholder="Filter">
-              </mat-form-field>
-              <button mat-button [matMenuTriggerFor]="animals">By</button>
-              <mat-menu #animals="matMenu">
-                <button mat-menu-item (click)="showMissingFiles()">
-                  Missing files
-                </button>
-                <button mat-menu-item (click)="showAllResources()">
-                  All
-                </button>
-              </mat-menu>
-              <span *ngIf="totalResources" class="tag tag-default">Found: {{ totalResources.length }}</span>
-            </div>
-            <mat-nav-list *ngIf="!loading">
-              <mat-list-item *ngFor="let c of totalResources; trackBy: trackCategoryByKey; let i = index;" (click)="viewResource(i)">
-                <a matLine href="javascript:void(0);" title="{{ c.keyName }}">{{ i + 1 }}. {{ c.keyName }}</a>
-                <button mat-icon-button>
-                  <mat-icon><span class="tag tag-primary">{{ c.languages.length }}</span></mat-icon>
-                </button>
-              </mat-list-item>
-            </mat-nav-list>
-          </div>
-        </mat-drawer>
-
-        <div class="editor-sidenav-content">
-          <div class="editor-sidenav-content_header">
-            <!-- <button type="button" mat-button (click)="drawer.toggle()">
-              Toggle resources
-            </button>
-            <br /> -->
-          </div>
-          <div class="editor-sidenav-content_body">
-            <mat-accordion>
-              <ng-container *ngIf="resourcesGroup">
-                <mat-expansion-panel class="resource-panel" [expanded]="true" [disabled]="true">
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                      <input type="text" [(ngModel)]="resourcesGroup.keyName" class="editor-component__focus_edit">
-                    </mat-panel-title>
-                    <mat-panel-description style="display: flex; justify-content: flex-end;">
-                      <span class="tag tag-default">{{ resourcesGroup.languages.length }} elements</span>
-                    </mat-panel-description>
-                  </mat-expansion-panel-header>
-                  <ng-template matExpansionPanelContent>
-                    <div *ngIf="states.length > 0" class="editor-component_footer">
-                      <mat-form-field matLine>
-                        <input matInput [placeholder]="'Enter filename for new language'" [(ngModel)]="modelNewLanguage" />
-                      </mat-form-field>
-                      <button mat-button (click)="addLanguage(false, resourcesGroup.keyName)">
-                        Add only to this resource
-                      </button>
-                      <button mat-button (click)="addLanguage(true, resourcesGroup.keyName)">
-                        Add to all resources
-                      </button>
-                      <div>
-                        <button mat-button [matMenuTriggerFor]="animals">Options</button>
-                        <mat-menu #animals="matMenu">
-                          <button mat-menu-item [matMenuTriggerFor]="render">Render</button>
-                          <button mat-menu-item [matMenuTriggerFor]="format">Format</button>
-                          <button mat-menu-item (click)="removeResourceKey(resourcesGroup.keyName)">
-                            Remove this key
-                          </button>
-                        </mat-menu>
-                        <mat-menu #render="matMenu">
-                          <button mat-menu-item>
-                            <mat-checkbox (change)="onChangeInner($event, i)" title="Render HTML content in each translation">
-                              Render
-                            </mat-checkbox>
-                          </button>
-                        </mat-menu>
-                        <mat-menu #format="matMenu">
-                          <button mat-menu-item (click)="copyFormat('ngx-translate', resourcesGroup.keyName)">ngx-translate
-                            format</button>
-                        </mat-menu>
-                      </div>
-                    </div>
-                    <ng-container *ngFor="let transl of resourcesGroup.languages; trackBy: trackResourceByKey">
-                      <div class="editor-component_input">
-                        <label>{{ transl.lang }}</label>
-                        <input [placeholder]="transl.lang" [(ngModel)]="transl.text" />
-                      </div>
-
-                      <div *ngIf="renderChecked" class="editor-component_states--inner">
-                        <div [innerHTML]="transl.text"></div>
-                      </div>
-
-                      <fieldset *ngIf="transl.children">
-                        <legend>Nested child</legend>
-                        <fieldset *ngFor="let child of transl.children" class="editor-component_input">
-                          <legend>{{ child.keyName }}</legend>
-                          <input [(ngModel)]="child.text">
-                        </fieldset>
-                      </fieldset>
-                    </ng-container>
-                  </ng-template>
-                </mat-expansion-panel>
-              </ng-container>
-            </mat-accordion>
-          </div>
-        </div>
-      </mat-drawer-container>
     </div>
   </div>
-</app-sidenav>
+</nav>
+
+<section *ngIf="!rw.hasFiles" class="hero is-primary is-fullheight-with-navbar is-bold">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <ng-container *ngIf="loading; else loading">
+        <p class="title">
+          No resources added yet
+        </p>
+        <button class="button is-primary is-light" (click)="imgFileInput.click()">Add JSON resources</button>
+      </ng-container>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading-panel">
+      <div id="bowlG">
+        <div id="bowl_ringG">
+          <div class="ball_holderG">
+            <div class="ballG">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</section>
+
+<ng-container *ngIf="rw.hasFiles">
+  <br>
+
+  <section class="container is-fluid hero is-fullheight-with-navbar">
+
+    <!-- Side nav -->
+    <div class="columns">
+      <div class="column is-one-quarter">
+        <nav class="panel">
+          <p class="panel-heading">
+            Translations
+          </p>
+          <div class="panel-block">
+            <p class="control has-icons-left">
+              <input class="input" type="text" placeholder="Search" [(ngModel)]="filter"
+                (ngModelChange)="filterResources($event)">
+              <span class="icon is-left">
+                <i class="fas fa-search" aria-hidden="true"></i>
+              </span>
+            </p>
+          </div>
+
+          <p class="panel-tabs">
+            <a [class.is-active]="currentTranslationTab == 'all'" (click)="currentTranslationTab = 'all'">All</a>
+            <a [class.is-active]="currentTranslationTab == 'addTranslation'" (click)="currentTranslationTab = 'addTranslation'">Add translation</a>
+            <a [class.is-active]="currentTranslationTab == 'addFile'"(click)="currentTranslationTab = 'addFile'">Add file</a>
+          </p>
+
+          <aside class="menu">
+            <ng-container [ngSwitch]="currentTranslationTab" class="menu-list">
+              <ng-container *ngSwitchCase="'all'">
+                <ul class="menu-list">
+
+                  <!-- Missing files -->
+                  <ng-container *ngIf="getMissingFiles() as missingFiles">
+                    <li *ngIf="missingFiles.length" class="is-size-7">
+                      <a [title]="missingFiles.join(', ')">{{ missingFiles.length }} missing</a>
+                    </li>
+                  </ng-container>
+
+                  <li *ngFor="let c of totalResources; trackBy: trackCategoryByKey; let i = index;" (click)="viewResource(i)" class="is-size-7">
+                    <a><span class="tag is-dark is-normal">{{ c.languages.length }}</span>{{ c.keyName }}</a>
+                  </li>
+                  <li>
+                    <a class="is-active">Manage Your Team</a>
+                    <ul>
+                      <li><a>Members</a></li>
+                      <li><a>Plugins</a></li>
+                      <li><a>Add a member</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'addTranslation'">
+
+                <section class="section">
+                  <div class="container">
+                    <div class="field">
+                      <label class="label">File name</label>
+                      <div class="control">
+                        <input class="input" placeholder="Enter filename for new language" [(ngModel)]="modelNewKey"/>
+                      </div>
+                    </div>
+
+                    <button (click)="addNewKey()" class="button is-link is-small">
+                      Add file
+                    </button>
+                  </div>
+                </section>
+
+                <div class="editor-sidenav_content">
+                  <div class="editor-sidenav_header">
+                    <span *ngIf="totalResources" class="tag tag-default">Found: {{ totalResources.length }}</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'addFile'">
+                <section class="section">
+                  <div class="container">
+                    <div class="field">
+                      <label class="label">Name</label>
+                      <div class="control">
+                        <input class="input" placeholder="Enter filename for new language" [(ngModel)]="modelNewLanguage" />
+                      </div>
+                    </div>
+
+                    <button (click)="addLanguage(false, resourcesGroup.keyName)" class="button is-link is-small">
+                      Add only to this resource
+                    </button>
+                    <br>
+                    <button (click)="addLanguage(true, resourcesGroup.keyName)" class="button is-link is-light is-small">
+                      Add to all resources
+                    </button>
+                  </div>
+                </section>
+              </ng-container>
+
+            </ng-container>
+          </aside>
+        </nav>
+      </div>
+
+
+      <!-- Body -->
+      <div class="column">
+        <ng-container *ngIf="resourcesGroup">
+          <nav class="panel">
+            <div class="panel-heading is-flex">
+              <input type="text" [(ngModel)]="resourcesGroup.keyName" class="input is-small is-rounded">
+              &nbsp;&nbsp;
+              <div class="dropdown is-hoverable">
+                <div class="dropdown-trigger">
+                  <button class="button is-small is-rounded" aria-haspopup="true" aria-controls="dropdown-menu4">
+                    <span>Options</span>
+                    <span class="icon is-small">
+                      <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                  <div class="dropdown-content">
+                    <a class="dropdown-item" (click)="removeResourceKey(resourcesGroup.keyName)">
+                      Remove this translation
+                    </a>
+                    <a class="dropdown-item" (click)="copyFormat('ngx-translate', resourcesGroup.keyName)">
+                      Copy 'ngx-translate' format
+                    </a>
+                    <a class="dropdown-item">
+                      <label class="checkbox">
+                        <input type="checkbox" (change)="onChangeInner($event, i)">
+                        Render HTML
+                      </label>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-container *ngFor="let transl of resourcesGroup?.languages; trackBy: trackResourceByKey">
+              <a class="panel-block">
+                <div class="field is-full-width">
+                  <label class="label is-small">{{ transl.lang }}</label>
+                  <div class="control has-icons-left has-icons-right">
+                    <input class="input is-small" type="text" [placeholder]="transl.lang" [(ngModel)]="transl.text">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-font"></i>
+                    </span>
+                  </div>
+                </div>
+              </a>
+              <a *ngIf="renderChecked" class="panel-block">
+                <div class="box is-full-width">
+                  <article class="media">
+                    <div class="media-content">
+                      <div class="content">
+                        <div [innerHTML]="transl.text"></div>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </a>
+            </ng-container>
+          </nav>
+        </ng-container>
+      </div>
+    </div>
+  </section>
+</ng-container>

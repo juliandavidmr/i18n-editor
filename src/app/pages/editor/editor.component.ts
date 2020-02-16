@@ -1,7 +1,5 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
 import { RwService, ICategory } from 'src/app/services/rw/rw.service';
-import { MatCheckboxChange, MatDialog } from '@angular/material';
-import { DialogOverviewComponent } from 'src/app/components/dialog-overview/dialog-overview.component';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -11,9 +9,7 @@ import * as XLSX from 'xlsx';
 })
 export class EditorComponent {
 
-  states: {
-    inner: boolean
-  }[] = [];
+  states: { inner: boolean }[] = [];
   modelNewLanguage = '.json';
   modelNewKey = '';
   resourcesGroup: any;
@@ -22,18 +18,16 @@ export class EditorComponent {
   jsonResult: any = {};
   filter: string;
   totalResources: any[] = [];
-  missingResources: any[] = [];
   renderChecked: boolean = false;
-  isMissingActivated: boolean = false;
+  currentTranslationTab: 'all' | 'addFile' | 'addTranslation' = 'all';
 
-  constructor(public rw: RwService, public dialog: MatDialog, private cdRef: ChangeDetectorRef) { }
+  constructor(public rw: RwService, private cdRef: ChangeDetectorRef) { }
 
   readMultiFiles(e: any) {
     this.loading = true;
     this.cdRef.detectChanges();
     this.rw.readMultiFiles(e).then(({ count }) => {
       this.totalResources = this.rw.categoryList;
-      this.missingResources = this.rw.categoryList.filter(res => res.languages.length != this.rw.fileList.length)
       Array.from({ length: count }, () => this.states.push({ inner: false }));
       this.loading = false;
       this.cdRef.detectChanges();
@@ -105,14 +99,11 @@ export class EditorComponent {
 
   filterResources(event) {
     if (event != '') {
-      this.totalResources =
-        this.isMissingActivated ?
-          this.missingResources.filter(res => res.keyName.toLowerCase().indexOf(event.toLowerCase()) > -1) :
-          this.rw.categoryList.filter(res => res.keyName.toLowerCase().indexOf(event.toLowerCase()) > -1);
+      this.totalResources = this.rw.categoryList.filter(res => res.keyName.toLowerCase().indexOf(event.toLowerCase()) > -1);
       if (this.resourcesGroup)
         this.resourcesGroup = this.totalResources.filter(res => res.keyName.toLowerCase().indexOf(this.resourcesGroup.keyName.toLowerCase()) > -1).length > 0 ? this.resourcesGroup : null;
     } else {
-      this.totalResources = this.isMissingActivated ? this.missingResources : this.rw.categoryList;
+      this.totalResources = this.rw.categoryList;
     }
   }
 
@@ -134,21 +125,20 @@ export class EditorComponent {
     }
   }
 
-  removeResourceKey(keyName) {
-    this.rw.removeResourceKey(keyName);
-    this.refreshResources();
-  }
-
-  refreshResources() {
-    if (this.isMissingActivated) {
-      this.missingResources = this.rw.categoryList.filter(res => res.languages.length != this.rw.fileList.length)
-    } else {
-      this.totalResources = this.rw.categoryList;
+  removeResourceKey(keyName: string) {
+    const r = confirm(`Are you sure to remove "${keyName}"?`);
+    if (r) {
+      this.rw.removeResourceKey(keyName);
+      this.refreshResources();
     }
   }
 
-  onChangeInner(event: MatCheckboxChange, index: number) {
-    this.renderChecked = event.checked;
+  refreshResources() {    
+    this.totalResources = this.rw.categoryList;
+  }
+
+  onChangeInner(event) {
+    this.renderChecked = event.target.checked;
     this.state.inner = this.renderChecked;
   }
 
@@ -163,14 +153,7 @@ export class EditorComponent {
   }
 
   openDialog(title: string, content: string, width: number = 430, isField: boolean = false, showCheckboxes: boolean = false): void {
-    const dialogRef = this.dialog.open(DialogOverviewComponent, {
-      width: `${width}px`,
-      data: { title, content, isField, showCheckboxes }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      //console.log('The dialog was closed', result);
-    });
+    alert(content);
   }
 
   // Treat the instructor name as the unique identifier for the object
@@ -187,13 +170,7 @@ export class EditorComponent {
     this.state = this.states[index];
   }
 
-  showMissingFiles() {
-    this.totalResources = this.missingResources.filter(res => res.languages.length != this.rw.fileList.length)
-    this.isMissingActivated = true;
-  }
-
-  showAllResources() {
-    this.totalResources = this.rw.categoryList;
-    this.isMissingActivated = false;
+  getMissingFiles() {
+    return this.rw.categoryList.filter(res => res.languages.length != this.rw.fileList.length)
   }
 }
