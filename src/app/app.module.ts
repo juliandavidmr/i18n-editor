@@ -28,6 +28,11 @@ import { EditorComponent } from './pages/editor/editor.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { DialogOverviewComponent } from './components/dialog-overview/dialog-overview.component';
 import { ConfigService } from './services/config/config.service';
+import { StoreModule } from '@ngrx/store';
+import { reducers, metaReducers } from './reducers/reducers';
+import * as fromTranslation from './store/translation/translation.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { TranslationEffects } from './store/translation/translation.effects';
 
 @NgModule({
   declarations: [
@@ -57,7 +62,17 @@ import { ConfigService } from './services/config/config.service';
     MatDialogModule,
     MatListModule,
     MatTreeModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    StoreModule.forRoot(reducers, {
+      metaReducers,
+      runtimeChecks: {
+        strictStateImmutability: true,
+        strictActionImmutability: true
+      }
+    }),
+    StoreModule.forFeature(fromTranslation.translationFeatureKey, fromTranslation.reducer),
+    EffectsModule.forRoot([]),
+    EffectsModule.forFeature([TranslationEffects])
   ],
   entryComponents: [DialogOverviewComponent],
   providers: [RwService, ConfigService],

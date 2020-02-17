@@ -1,74 +1,3 @@
-.editor-component {
-
-}
-
-.tag {
-  border-radius: 10px;
-  font-size: 12pt;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0px 5px;
-  padding: 2px 8px;
-
-  &-primary {
-      background-color: #673ab7;
-      color: #FFF;
-  }
-
-  &-default {
-      background-color: #EBEBEB;
-  }
-}
-
-.btn {
-  border-radius: 5px;
-  font-size: 12pt;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0px 5px;
-
-  &-primary {
-      background-color: #673ab7;
-      color: #FFF;
-  }
-
-  &-default {
-      background-color: #EBEBEB;
-  }
-}
-
-.editor-container {
-  width: 100%;
-  height: 100%;
-}
-
-.editor-sidenav-content {
-  display: flex;
-  height: 100%;
-  flex-direction: column;
-  padding: 5px;
-
-  &_header {
-    width: 100%;
-  }
-
-  &_body {
-    width: 100%;
-  }
-}
-
-.editor-sidenav {
-  max-width: 30%;
-
-  &_header {
-    text-align: center;
-    border-bottom: 1px solid lightgrey;
-    background-color: #F5F5F5;
-  }
-}
-
-.mat-form-field-infix {
-  height: 30px;
-}
-
 .empty-content {
   text-align: center;
   width: 100%;
@@ -92,7 +21,6 @@
   left: 48%;
   z-index: 1000;
 }
-
 
 #bowlG{
 	position:relative;

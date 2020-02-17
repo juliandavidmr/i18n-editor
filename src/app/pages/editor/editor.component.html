@@ -28,31 +28,35 @@
       <input hidden type="file" #excelFileInput (change)="readExcelFile($event)" />
     </div>
 
-    <div class="navbar-end">
-      <ng-container *ngIf="rw.hasFiles">
+    <ng-container *ngIf="!isEmpty">
+      <div class="navbar-end">
         <div class="navbar-item">
-          <span class="tag is-primary is-normal">{{ rw.fileList.length }} files</span>
-          <span class="tag is-info is-normal">{{ rw.categoryList.length }} resources</span>
-        </div>
-      </ng-container>
+          <span class="tag is-info is-normal">{{ translationGroups.length }} resources</span>
 
-      <div *ngIf="rw.hasFiles" class="navbar-item">
-        <div class="field is-grouped">
-          <p class="control">
-            <a class="button is-primary" (click)="save()">
-              <span class="icon">
-                <i class="fas fa-download"></i>
-              </span>
-              <span>Download</span>
-            </a>
-          </p>
+          <ng-container *ngIf="resourcesGroup">
+            &nbsp;&nbsp;
+            <span class="tag is-primary is-normal">{{ resourcesGroup.detail.length }} files</span>
+          </ng-container>
+        </div>
+
+        <div class="navbar-item">
+          <div class="field is-grouped">
+            <p class="control">
+              <a class="button is-primary is-small" (click)="save()">
+                <span class="icon">
+                  <i class="fas fa-download"></i>
+                </span>
+                <span>Download</span>
+              </a>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </ng-container>
   </div>
 </nav>
 
-<section *ngIf="!rw.hasFiles" class="hero is-primary is-fullheight-with-navbar is-bold">
+<section *ngIf="isEmpty" class="hero is-primary is-fullheight-with-navbar is-bold">
   <div class="hero-body">
     <div class="container has-text-centered">
       <ng-container *ngIf="loading; else loading">
@@ -78,7 +82,7 @@
   </ng-template>
 </section>
 
-<ng-container *ngIf="rw.hasFiles">
+<ng-container *ngIf="!isEmpty">
   <br>
 
   <section class="container is-fluid hero is-fullheight-with-navbar">
@@ -92,8 +96,7 @@
           </p>
           <div class="panel-block">
             <p class="control has-icons-left">
-              <input class="input" type="text" placeholder="Search" [(ngModel)]="filter"
-                (ngModelChange)="filterResources($event)">
+              <input class="input" type="text" placeholder="Search" [(ngModel)]="filter" (ngModelChange)="filterResources($event)">
               <span class="icon is-left">
                 <i class="fas fa-search" aria-hidden="true"></i>
               </span>
@@ -103,7 +106,7 @@
           <p class="panel-tabs">
             <a [class.is-active]="currentTranslationTab == 'all'" (click)="currentTranslationTab = 'all'">All</a>
             <a [class.is-active]="currentTranslationTab == 'addTranslation'" (click)="currentTranslationTab = 'addTranslation'">Add translation</a>
-            <a [class.is-active]="currentTranslationTab == 'addFile'"(click)="currentTranslationTab = 'addFile'">Add file</a>
+            <a [class.is-active]="currentTranslationTab == 'addFile'" (click)="currentTranslationTab = 'addFile'">Add file</a>
           </p>
 
           <aside class="menu">
@@ -118,16 +121,10 @@
                     </li>
                   </ng-container>
 
-                  <li *ngFor="let c of totalResources; trackBy: trackCategoryByKey; let i = index;" (click)="viewResource(i)" class="is-size-7">
-                    <a><span class="tag is-dark is-normal">{{ c.languages.length }}</span>{{ c.keyName }}</a>
-                  </li>
-                  <li>
-                    <a class="is-active">Manage Your Team</a>
-                    <ul>
-                      <li><a>Members</a></li>
-                      <li><a>Plugins</a></li>
-                      <li><a>Add a member</a></li>
-                    </ul>
+                  <li *ngFor="let c of translationGroups; trackBy: trackCategoryByKey; let i = index;" (click)="viewResource(i)" class="is-size-7">
+                    <a [class.is-active]="c.resource == resourcesGroup?.resource">
+                      <span class="tag is-dark is-normal">{{ c.detail.length }}</span>&nbsp;&nbsp; {{ c.resource }}
+                    </a>
                   </li>
                 </ul>
               </ng-container>
@@ -139,7 +136,7 @@
                     <div class="field">
                       <label class="label">File name</label>
                       <div class="control">
-                        <input class="input" placeholder="Enter filename for new language" [(ngModel)]="modelNewKey"/>
+                        <input class="input" placeholder="Enter filename for new language" [(ngModel)]="modelNewKey" />
                       </div>
                     </div>
 
@@ -166,13 +163,15 @@
                       </div>
                     </div>
 
-                    <button (click)="addLanguage(false, resourcesGroup.keyName)" class="button is-link is-small">
-                      Add only to this resource
-                    </button>
-                    <br>
-                    <button (click)="addLanguage(true, resourcesGroup.keyName)" class="button is-link is-light is-small">
-                      Add to all resources
-                    </button>
+                    <ng-container *ngIf="resourcesGroup">
+                      <button (click)="addLanguage(false, resourcesGroup.resource)" class="button is-link is-small">
+                        Add only to this resource
+                      </button>
+                      <br>
+                      <button (click)="addLanguage(true, resourcesGroup.resource)" class="button is-link is-light is-small">
+                        Add to all resources
+                      </button>
+                    </ng-container>
                   </div>
                 </section>
               </ng-container>
@@ -185,65 +184,63 @@
 
       <!-- Body -->
       <div class="column">
-        <ng-container *ngIf="resourcesGroup">
-          <nav class="panel">
-            <div class="panel-heading is-flex">
-              <input type="text" [(ngModel)]="resourcesGroup.keyName" class="input is-small is-rounded">
-              &nbsp;&nbsp;
-              <div class="dropdown is-hoverable">
-                <div class="dropdown-trigger">
-                  <button class="button is-small is-rounded" aria-haspopup="true" aria-controls="dropdown-menu4">
-                    <span>Options</span>
-                    <span class="icon is-small">
-                      <i class="fas fa-angle-down" aria-hidden="true"></i>
-                    </span>
-                  </button>
-                </div>
-                <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-                  <div class="dropdown-content">
-                    <a class="dropdown-item" (click)="removeResourceKey(resourcesGroup.keyName)">
-                      Remove this translation
-                    </a>
-                    <a class="dropdown-item" (click)="copyFormat('ngx-translate', resourcesGroup.keyName)">
-                      Copy 'ngx-translate' format
-                    </a>
-                    <a class="dropdown-item">
-                      <label class="checkbox">
-                        <input type="checkbox" (change)="onChangeInner($event, i)">
-                        Render HTML
-                      </label>
-                    </a>
-                  </div>
+        <nav *ngIf="resourcesGroup" class="panel">
+          <div class="panel-heading is-flex">
+            <input type="text" [(ngModel)]="translationGroups[currentTranslationGroup].resource" class="input is-small is-rounded">
+            &nbsp;&nbsp;
+            <div class="dropdown is-hoverable">
+              <div class="dropdown-trigger">
+                <button class="button is-small is-rounded" aria-haspopup="true" aria-controls="dropdown-menu4">
+                  <span>Options</span>
+                  <span class="icon is-small">
+                    <i class="fas fa-angle-down" aria-hidden="true"></i>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                <div class="dropdown-content">
+                  <a class="dropdown-item" (click)="removeResourceKey(translationGroups[currentTranslationGroup].resource)">
+                    Remove this translation
+                  </a>
+                  <a class="dropdown-item" (click)="copyFormat('ngx-translate', translationGroups[currentTranslationGroup].resource)">
+                    Copy <i>ngx-translate</i> format
+                  </a>
+                  <a class="dropdown-item">
+                    <label class="checkbox">
+                      <input type="checkbox" (change)="onChangeInner($event, i)">
+                      Render HTML
+                    </label>
+                  </a>
                 </div>
               </div>
             </div>
+          </div>
 
-            <ng-container *ngFor="let transl of resourcesGroup?.languages; trackBy: trackResourceByKey">
-              <a class="panel-block">
-                <div class="field is-full-width">
-                  <label class="label is-small">{{ transl.lang }}</label>
-                  <div class="control has-icons-left has-icons-right">
-                    <input class="input is-small" type="text" [placeholder]="transl.lang" [(ngModel)]="transl.text">
-                    <span class="icon is-small is-left">
-                      <i class="fas fa-font"></i>
-                    </span>
-                  </div>
+          <ng-container *ngFor="let transl of translationGroups[currentTranslationGroup].detail; trackBy: trackResourceByKey">
+            <a class="panel-block">
+              <div class="field is-full-width">
+                <label class="label is-small">{{ transl.filename }}</label>
+                <div class="control has-icons-left has-icons-right">
+                  <input class="input is-small" type="text" [placeholder]="transl.filename" [(ngModel)]="transl.text">
+                  <span class="icon is-small is-left">
+                    <i class="fas fa-font"></i>
+                  </span>
                 </div>
-              </a>
-              <a *ngIf="renderChecked" class="panel-block">
-                <div class="box is-full-width">
-                  <article class="media">
-                    <div class="media-content">
-                      <div class="content">
-                        <div [innerHTML]="transl.text"></div>
-                      </div>
+              </div>
+            </a>
+            <a *ngIf="renderChecked" class="panel-block">
+              <div class="box is-full-width">
+                <article class="media">
+                  <div class="media-content">
+                    <div class="content">
+                      <div [innerHTML]="transl.text"></div>
                     </div>
-                  </article>
-                </div>
-              </a>
-            </ng-container>
-          </nav>
-        </ng-container>
+                  </div>
+                </article>
+              </div>
+            </a>
+          </ng-container>
+        </nav>
       </div>
     </div>
   </section>

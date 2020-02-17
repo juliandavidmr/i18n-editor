@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import JSZip from 'jszip';
 import * as XLSX from 'xlsx';
+import { TranslationGroup } from 'src/app/store/translation/translation.reducer';
 
 interface IChild {
   keyName: string;
@@ -37,33 +38,6 @@ export class RwService {
 
   files() {
     return this.fileList;
-  }
-
-  readMultiFiles(e: any) {
-    return new Promise((resolve => {
-      this.fileList = [];
-      const files = e.currentTarget.files as File[];
-      Object.keys(files).forEach(i => {
-        const file = files[i];
-        const reader = new FileReader();
-        reader.onload = () => {
-          // server call for uploading or reading the files one-by-one
-          // by using 'reader.result' or 'file'
-          this.fileList.push({
-            name: file.name,
-            content: JSON.parse(reader.result as string)
-          });
-          if (this.fileList.length === files.length) {
-            resolve({ count: this.categorize() });
-          }
-        };
-        reader.readAsText(file);
-      });
-    }));
-  }
-
-  clean() {
-
   }
 
   readExcelFile(e: any) {
@@ -110,38 +84,6 @@ export class RwService {
       maxCellWidth: 20
     };
     //XLSX.export(tabularData, options);
-  }
-
-  private categorize() {
-    for (const file of this.fileList) {
-      Object.keys(file.content).map(key => {
-        let category = this.categoryList.find(c => c.keyName === key);
-
-        if (!category) {
-          category = {
-            keyName: key,
-            languages: []
-          };
-
-          this.categoryList.push(category);
-        }
-
-        const text = file.content[key];
-        if (typeof text === 'string') {
-          category.languages.push({
-            lang: file.name,
-            text: file.content[key]
-          });
-        } else if (typeof text === 'object') {
-          category.languages.push({
-            lang: file.name,
-            children: this.getChilds(text)
-          });
-        }
-      });
-    }
-    //console.log('Categories:', this.categoryList);
-    return this.categoryList.length;
   }
 
   getChilds(text: { [key: string]: string }) {
@@ -197,14 +139,14 @@ export class RwService {
     this.categoryList = this.categoryList.filter(c => c.keyName !== key);
   }
 
-  exportCategories() {
+  exportCategories(listAll: TranslationGroup[]) {
     const list: { lang?: string, content?: { [key: string]: string } } = {};
 
-    this.categoryList.map((key) => {
-      const languages: any = key.languages;
-      languages.map((l: { lang: string | number; text: any; }) => {
-        list[l.lang] = list[l.lang] || {};
-        list[l.lang][key.keyName] = l.text;
+    listAll.map((key) => {
+      const languages = key.detail;
+      languages.map((l) => {
+        list[l.filename] = list[l.filename] || {};
+        list[l.filename][key.resource] = l.text;
       });
     });
 

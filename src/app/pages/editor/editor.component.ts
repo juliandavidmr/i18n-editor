@@ -1,6 +1,8 @@
 import { Component, ChangeDetectorRef } from '@angular/core';
-import { RwService, ICategory } from 'src/app/services/rw/rw.service';
+import { RwService } from 'src/app/services/rw/rw.service';
 import * as XLSX from 'xlsx';
+import { TranslationService } from 'src/app/store/translation/translation.service';
+import { TranslationGroup, Translation } from 'src/app/store/translation/translation.reducer';
 
 @Component({
   selector: 'app-editor',
@@ -12,7 +14,9 @@ export class EditorComponent {
   states: { inner: boolean }[] = [];
   modelNewLanguage = '.json';
   modelNewKey = '';
-  resourcesGroup: any;
+  currentTranslationGroup = 0;
+  resourcesGroup: TranslationGroup;
+  translationGroups: TranslationGroup[] = [];
   state: any;
   loading: boolean = false;
   jsonResult: any = {};
@@ -21,17 +25,23 @@ export class EditorComponent {
   renderChecked: boolean = false;
   currentTranslationTab: 'all' | 'addFile' | 'addTranslation' = 'all';
 
-  constructor(public rw: RwService, private cdRef: ChangeDetectorRef) { }
+  constructor(public rw: RwService, private cdRef: ChangeDetectorRef, private readonly translationService: TranslationService) {
+    this.initTranslationList();
+  }
+
+  private initTranslationList() {
+    this.translationService.getTranslations().subscribe(list => {
+      this.translationGroups = JSON.parse(JSON.stringify(list));
+    })
+  }
+
+  get isEmpty() {
+    return this.translationGroups.length === 0;
+  }
 
   readMultiFiles(e: any) {
-    this.loading = true;
-    this.cdRef.detectChanges();
-    this.rw.readMultiFiles(e).then(({ count }) => {
-      this.totalResources = this.rw.categoryList;
-      Array.from({ length: count }, () => this.states.push({ inner: false }));
-      this.loading = false;
-      this.cdRef.detectChanges();
-    });
+    const files = e.currentTarget.files as File[];
+    this.translationService.loadTranslation(files);
   }
 
   readExcelFile(e) {
@@ -97,14 +107,14 @@ export class EditorComponent {
     return value || '';
   }
 
-  filterResources(event) {
-    if (event != '') {
-      this.totalResources = this.rw.categoryList.filter(res => res.keyName.toLowerCase().indexOf(event.toLowerCase()) > -1);
-      if (this.resourcesGroup)
-        this.resourcesGroup = this.totalResources.filter(res => res.keyName.toLowerCase().indexOf(this.resourcesGroup.keyName.toLowerCase()) > -1).length > 0 ? this.resourcesGroup : null;
-    } else {
-      this.totalResources = this.rw.categoryList;
-    }
+  filterResources(event: string) {
+    // if (event != '') {
+    //   this.totalResources = this.rw.categoryList.filter(res => res.keyName.toLowerCase().indexOf(event.toLowerCase()) > -1);
+    //   if (this.resourcesGroup$)
+    //     this.resourcesGroup$ = this.totalResources.filter(res => res.keyName.toLowerCase().indexOf(this.resourcesGroup$.keyName.toLowerCase()) > -1).length > 0 ? this.resourcesGroup$ : null;
+    // } else {
+    //   this.totalResources = this.rw.categoryList;
+    // }
   }
 
   addLanguage(allKeys: boolean, resourceKey: string) {
@@ -113,7 +123,7 @@ export class EditorComponent {
   }
 
   save() {
-    this.rw.exportCategories();
+    this.rw.exportCategories(this.translationGroups);
   }
 
   addNewKey() {
@@ -157,17 +167,17 @@ export class EditorComponent {
   }
 
   // Treat the instructor name as the unique identifier for the object
-  trackCategoryByKey(index: number, category: ICategory) {
-    return category.keyName;
+  trackCategoryByKey(index: number, category: TranslationGroup) {
+    return category.resource;
   }
 
-  trackResourceByKey(index: number, transl: any) {
-    return transl.lang;
+  trackResourceByKey(index: number, transl: Translation) {
+    return transl.filename;
   }
 
-  viewResource(index: string | number) {
-    this.resourcesGroup = this.totalResources[index];
-    this.state = this.states[index];
+  viewResource(index: number) {
+    this.resourcesGroup = this.translationGroups[index];
+    this.currentTranslationGroup = index;
   }
 
   getMissingFiles() {
