@@ -41,7 +41,7 @@ export class EditorComponent {
 
   readMultiFiles(e: any) {
     const files = e.currentTarget.files as File[];
-    this.translationService.loadTranslation(files);
+    this.translationService.loadTranslation(files as any);
   }
 
   readExcelFile(e) {
@@ -182,5 +182,10 @@ export class EditorComponent {
 
   getMissingFiles() {
     return this.rw.categoryList.filter(res => res.languages.length != this.rw.fileList.length)
+  }
+
+  getCountryName(iso: string) {
+    iso = iso.split(/-|\./)[0];
+    return this.translationService.getCountryName(iso);
   }
 }
