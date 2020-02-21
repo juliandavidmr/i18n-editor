@@ -17,7 +17,7 @@ export class EditorComponent {
   currentTranslationGroup = 0;
   resourcesGroup: TranslationGroup;
   translationGroups: TranslationGroup[] = [];
-  state: any;
+  state: any = {};
   loading: boolean = false;
   jsonResult: any = {};
   filter: string;

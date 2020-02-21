@@ -3,22 +3,20 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import {
-  MatButtonModule,
-  MatCheckboxModule,
-  MatExpansionModule,
-  MatTableModule,
-  MatListModule,
-  MatFormFieldModule,
-  MatInputModule,
-  MatToolbarModule,
-  MatIconModule,
-  MatSidenavModule,
-  MatMenuModule,
-  MatDialogModule,
-  MatTreeModule,
-  MatSnackBarModule
-} from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTreeModule } from '@angular/material/tree';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RwService } from './services/rw/rw.service';
